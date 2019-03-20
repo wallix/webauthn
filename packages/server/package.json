@@ -1,0 +1,10 @@
+{
+  "name": "@webauthn/server",
+  "version": "0.0.1",
+  "main": "index.js",
+  "license": "MIT",
+  "dependencies": {
+    "cbor": "^4.1.5",
+    "jsrsasign": "^8.0.12"
+  }
+}

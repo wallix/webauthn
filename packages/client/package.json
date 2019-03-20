@@ -1,0 +1,9 @@
+{
+  "name": "@webauthn/client",
+  "version": "0.0.1",
+  "main": "index.js",
+  "license": "MIT",
+  "dependencies": {
+    "unibabel": "^2.1.7"
+  }
+}

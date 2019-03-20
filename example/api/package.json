@@ -1,0 +1,18 @@
+{
+    "name": "api",
+    "version": "1.0.0",
+    "main": "index.js",
+    "license": "MIT",
+    "private": true,
+    "scripts": {
+        "start": "node index.js",
+        "dev": "nodemon -w . index.js"
+    },
+    "dependencies": {
+        "body-parser": "^1.18.3",
+        "cors": "^2.8.5",
+        "express": "^4.16.4",
+        "nodemon": "^1.18.10",
+        "spdy": "^4.0.0"
+    }
+}

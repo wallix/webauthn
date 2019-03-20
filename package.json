@@ -1,0 +1,10 @@
+{
+    "name": "root",
+    "private": true,
+    "packages": [
+        "packages/*"
+    ],
+    "devDependencies": {
+        "lerna": "^3.13.1"
+    }
+}
