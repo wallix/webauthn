@@ -2,7 +2,11 @@ import React, { Component } from 'react';
 import { Fetch } from 'react-request';
 import './App.css';
 
-import { registrationChallengeToPublicKey, loginChallengeToPublicKey, publicKeyToJSON } from './webauthn';
+import { 
+    registrationChallengeToPublicKey, 
+    loginChallengeToPublicKey, 
+    publicKeyToJSON 
+} from '@webauthn/client';
 
 class RegisterButton extends Component {
     state = {

@@ -3,8 +3,6 @@ help:
 
 install:
 	yarn install
-	cd example/api && yarn install
-	cd example/front && yarn install
 
 run-example-api:
 	cd example/api && yarn start

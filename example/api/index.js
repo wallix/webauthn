@@ -10,7 +10,7 @@ const {
     registrationCredentialsToUserKey,
     requestLoginChallenge,
     loginCredentialsToChallenge
-} = require('../../packages/server/src');
+} = require('@webauthn/server');
 
 const app = express();
 app.use(cors());
