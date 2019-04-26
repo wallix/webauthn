@@ -2,7 +2,7 @@
   "name": "@webauthn/server",
   "version": "0.1.0",
   "main": "src/index.js",
-  "license": "MIT",
+  "license": "Apache",
   "dependencies": {
     "cbor": "^4.1.5",
     "jsrsasign": "^8.0.12"

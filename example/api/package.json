@@ -2,7 +2,7 @@
     "name": "@webauthn/example-api",
     "version": "0.1.0",
     "main": "index.js",
-    "license": "MIT",
+    "license": "Apache",
     "private": true,
     "scripts": {
         "start": "node index.js",

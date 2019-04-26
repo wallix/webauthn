@@ -2,6 +2,7 @@
     "name": "front",
     "version": "0.1.0",
     "private": true,
+    "license": "Apache",
     "dependencies": {
         "@webauthn/client": "0.1.0",
         "react": "^16.8.4",

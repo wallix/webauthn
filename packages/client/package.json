@@ -2,7 +2,7 @@
   "name": "@webauthn/client",
   "version": "0.1.0",
   "main": "src/index.js",
-  "license": "MIT",
+  "license": "Apache",
   "dependencies": {
     "unibabel": "^2.1.7"
   }
