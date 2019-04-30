@@ -1,8 +1,7 @@
 import React, { Component } from 'react';
 import { Fetch } from 'react-request';
 import { 
-    registrationChallengeToPublicKey, 
-    publicKeyToJSON 
+    solveRegistrationChallenge 
 } from '@webauthn/client';
 
 class RegisterButton extends Component {
@@ -10,20 +9,14 @@ class RegisterButton extends Component {
         credentials: null
     };
 
-    handleResponse = (error, response) => {
-        const publicKey = registrationChallengeToPublicKey(response.data);
+    handleResponse = async (error, response) => {
+        if (error) {
+            console.error(error);
+            return;
+        }
+        const credentials = await solveRegistrationChallenge(response.data);
 
-        navigator.credentials
-            .create({ publicKey })
-            .then(publicKeyToJSON)
-            .then(credentials => {
-                this.setState({ credentials });
-            })
-            .catch(error => {
-                console.error(error.name);
-                console.error(error.message);
-                console.error(error);
-            });
+        this.setState({ credentials });
     };
 
     render() {
@@ -35,7 +28,7 @@ class RegisterButton extends Component {
                     headers={{ 'Content-Type': 'application/json' }}
                     url="https://localhost:8000/register"
                     method="POST"
-                    body={JSON.stringify({ id: 'uuid', email: 'test@test', credentials })}
+                    body={JSON.stringify(credentials)}
                     lazy={false}
                 >
                     {({ loading }) => <button disabled>{loading ? 'Loading ...' : 'Registered'}</button>}
@@ -46,7 +39,7 @@ class RegisterButton extends Component {
         return (
             <Fetch
                 headers={{ 'Content-Type': 'application/json' }}
-                url="https://localhost:8000/register"
+                url="https://localhost:8000/request-register"
                 method="POST"
                 body={JSON.stringify({ id: 'uuid', email: 'test@test' })}
                 onResponse={this.handleResponse}

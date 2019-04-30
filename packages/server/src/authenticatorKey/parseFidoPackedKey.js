@@ -1,11 +1,11 @@
 const { X509 } = require('jsrsasign');
 const { createVerify } = require('crypto');
 
-import {
+const {
     hash,
     ConvertASN1toPEM,
     ConvertCOSEPublicKeyToRawPKCSECDHAKey,
-} from '../utils';
+} = require('../utils');
 
 const getCertificateInfo = certificate => {
     const subjectCert = new X509();
@@ -75,7 +75,7 @@ const parseAttestationData = buffer => {
     };
 };
 
-export const parseFidoPackedKey = (authenticatorKey, clientDataJSON) => {
+exports.parseFidoPackedKey = (authenticatorKey, clientDataJSON) => {
     const authenticatorData = parseAttestationData(authenticatorKey.authData);
 
     const clientDataHash = hash(
@@ -115,7 +115,7 @@ export const parseFidoPackedKey = (authenticatorKey, clientDataJSON) => {
     };
 };
 
-export const validateFidoPackedKey = (
+exports.validateFidoPackedKey = (
     authenticatorDataBuffer,
     key,
     clientDataJSON,

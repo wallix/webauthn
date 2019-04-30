@@ -1,33 +1,25 @@
 import React, { Component } from 'react';
 import { Fetch } from 'react-request';
 import {
-    loginChallengeToPublicKey, 
-    publicKeyToJSON 
+    solveLoginChallenge
 } from '@webauthn/client';
 
 
 class LoginButton extends Component {
     state = { credentials: null };
 
-    handleResponse = (error, response) => {
+    handleResponse = async (error, response) => {
+        if (error) {
+            console.error(error);
+            return;
+        }
         if (!response.data) {
             return;
         }
 
-        const publicKey = loginChallengeToPublicKey(response.data);
+        const credentials = await solveLoginChallenge(response.data);
 
-        navigator.credentials
-            .get({ publicKey })
-            .then(publicKeyToJSON)
-            .then(credentials => {
-                console.warn('creds', credentials);
-                this.setState({ credentials });
-            })
-            .catch(error => {
-                console.error(error.name);
-                console.error(error.message);
-                console.error(error);
-            });
+        this.setState({ credentials });
     };
 
     render() {
@@ -37,9 +29,9 @@ class LoginButton extends Component {
             return (
                 <Fetch
                     headers={{ 'Content-Type': 'application/json' }}
-                    url="https://localhost:8000/login"
+                    url="https://localhost:8000/login-challenge"
                     method="POST"
-                    body={JSON.stringify({ credentials })}
+                    body={JSON.stringify(credentials)}
                     lazy={false}
                 >
                     {({ loading, data }) => (

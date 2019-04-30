@@ -31,7 +31,7 @@ const parseAuthenticatorKey = (webAuthnResponse) => {
 };
 
 exports.parseRegisterRequest = (body) => {
-    if (!validateRegistrationCredentials()) {
+    if (!validateRegistrationCredentials(body)) {
         return {};
     }
     const challenge = getChallengeFromClientData(body.response.clientDataJSON);
@@ -43,7 +43,7 @@ exports.parseRegisterRequest = (body) => {
     };
 };
 
-exports.genearateRegistrationChallenge = ({ relyingParty, user } = {}) => {
+exports.generateRegistrationChallenge = ({ relyingParty, user } = {}) => {
     if (!relyingParty || !relyingParty.name || typeof relyingParty.name !== 'string') {
         throw new Error('The typeof relyingParty.name should be a string');
     }
