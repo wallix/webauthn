@@ -3,8 +3,8 @@ const { createVerify } = require('crypto');
 
 const {
     hash,
-    ConvertASN1toPEM,
-    ConvertCOSEPublicKeyToRawPKCSECDHAKey,
+    convertASN1toPEM,
+    convertCOSEPublicKeyToRawPKCSECDHAKey,
 } = require('../utils');
 
 const getCertificateInfo = certificate => {
@@ -137,7 +137,7 @@ exports.validateFidoPackedKey = (
         clientDataHash,
     ]);
 
-    const publicKey = ConvertASN1toPEM(Buffer.from(key.publicKey, 'base64'));
+    const publicKey = convertASN1toPEM(Buffer.from(key.publicKey, 'base64'));
     const signatureBuffer = Buffer.from(base64Signature, 'base64');
 
     return createVerify('sha256')
@@ -255,10 +255,10 @@ function verifyFullAttestation(
 ) {
     const authenticatorData = parseAttestationData(authenticatorKey.authData);
 
-    const publicKey = ConvertCOSEPublicKeyToRawPKCSECDHAKey(
+    const publicKey = convertCOSEPublicKeyToRawPKCSECDHAKey(
         authenticatorData.COSEPublicKey
     );
-    const leafCert = ConvertASN1toPEM(authenticatorKey.attStmt.x5c[0]);
+    const leafCert = convertASN1toPEM(authenticatorKey.attStmt.x5c[0]);
     const certInfo = getCertificateInfo(leafCert);
     if (certInfo.subject.OU !== 'Authenticator Attestation') {
         throw new Error(

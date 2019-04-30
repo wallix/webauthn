@@ -17,7 +17,7 @@ npm install @webauthn/server
 
 ## usage
 
-Webauthn is composed of two parts @webauthn/client and @webauthn/server
+`Webauthn` is composed of two parts `@webauthn/client` and `@webauthn/server`
 
 ### On the browser
 
@@ -28,9 +28,9 @@ import {
 } from '@webauthn/client';
 ```
 
-- solveRegistrationChallenge:
+- `solveRegistrationChallenge`:
     convert the challenge returned by the server on the register route into the response to be returned
-- solveLoginChallenge:
+- `solveLoginChallenge`:
     convert the challenge returned by the server on the login route into the response to be returned
 
 See an example in example/front
@@ -47,23 +47,23 @@ import {
 } from '@webauthn/server';
 ```
 
-- parseRegisterRequest:
-    Extract challenge and key from the register request body. The challenge allow to retrieve the user, and the key must be stocked server side linked to the user.
-- generateRegistrationChallenge:
-    Generate a challenge from a relying party and an user `{ relyingParty, user }` to be sent back to the client, in order to register
-- parseLoginRequest:
+- `parseRegisterRequest`:
+    Extract challenge and key from the register request body. The challenge allow to retrieve the user, and the key must be stored server side linked to the user.
+- `generateRegistrationChallenge`:
+    Generate a challenge from a relying party and a user `{ relyingParty, user }` to be sent back to the client, in order to register
+- `parseLoginRequest`:
     Extract challenge and KeyId from the login request.
-- generateLoginChallenge:
-    Generate challengeResponse from the key sent by the client during login. challengeResponse.challenge should be stocked serverside linked to the corresponding user
-- verifyAuthenticatorAssertion
-    Take the loginChallenge request body and the key stocked with the user, and return true if it passes the authenticator assertion
+- `generateLoginChallenge`:
+    Generate challengeResponse from the key sent by the client during login. challengeResponse.challenge should be stored serverside linked to the corresponding user
+- `verifyAuthenticatorAssertion`:
+    Take the loginChallenge request body and the key stored with the user, and return true if it passes the authenticator assertion
 
 See an example in example/server
 
 
 ## Roadmap
 
-For now only fido-u2f and packed format are implemeted
+For now only fido-u2f and packed format are implemented
 
 - Implement android-key format
 - Implement android-safetynet format

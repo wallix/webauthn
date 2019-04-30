@@ -1,9 +1,9 @@
 const {
     U2F_USER_PRESENTED,
     hash,
-    ConvertASN1toPEM,
+    convertASN1toPEM,
     verifySignature,
-    ConvertCOSEPublicKeyToRawPKCSECDHAKey,
+    convertCOSEPublicKeyToRawPKCSECDHAKey,
 } = require('../utils');
 
 exports.parseFidoU2FKey = (authenticatorKey, clientDataJSON) => {
@@ -18,7 +18,7 @@ exports.parseFidoU2FKey = (authenticatorKey, clientDataJSON) => {
         Buffer.from(clientDataJSON, 'base64')
     );
     const reservedByte = Buffer.from([0x00]);
-    const publicKey = ConvertCOSEPublicKeyToRawPKCSECDHAKey(
+    const publicKey = convertCOSEPublicKeyToRawPKCSECDHAKey(
         authenticatorData.COSEPublicKey
     );
     const signatureBase = Buffer.concat([
@@ -29,7 +29,7 @@ exports.parseFidoU2FKey = (authenticatorKey, clientDataJSON) => {
         publicKey,
     ]);
 
-    const PEMCertificate = ConvertASN1toPEM(authenticatorKey.attStmt.x5c[0]);
+    const PEMCertificate = convertASN1toPEM(authenticatorKey.attStmt.x5c[0]);
     const signature = authenticatorKey.attStmt.sig;
 
     const verified = verifySignature(signature, signatureBase, PEMCertificate);
@@ -69,7 +69,7 @@ exports.validateFidoU2FKey = (
         clientDataHash,
     ]);
 
-    const publicKey = ConvertASN1toPEM(Buffer.from(key.publicKey, 'base64'));
+    const publicKey = convertASN1toPEM(Buffer.from(key.publicKey, 'base64'));
     const signature = Buffer.from(base64Signature, 'base64');
 
     return verifySignature(signature, signatureBase, publicKey);

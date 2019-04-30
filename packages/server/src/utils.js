@@ -18,7 +18,7 @@ exports.hash = (alg, data) => {
 /**
  * Convert binary certificate or public key to an OpenSSL-compatible PEM text format.
  */
-exports.ConvertASN1toPEM = pkBuffer => {
+exports.convertASN1toPEM = pkBuffer => {
     if (!Buffer.isBuffer(pkBuffer)) {
         throw new Error('ASN1toPEM: pkBuffer must be Buffer.');
     }
@@ -67,7 +67,7 @@ exports.ConvertASN1toPEM = pkBuffer => {
  * @param  {Buffer} cosePublicKey - COSE encoded public key
  * @return {Buffer}               - RAW PKCS encoded public key
  */
-exports.ConvertCOSEPublicKeyToRawPKCSECDHAKey = cosePublicKey => {
+exports.convertCOSEPublicKeyToRawPKCSECDHAKey = cosePublicKey => {
     /* 
     +------+-------+-------+---------+----------------------------------+
     | name | key   | label | type    | description                      |
