@@ -1,5 +1,10 @@
-const { decodeAllSync } = require('cbor');
-const { U2F_USER_PRESENTED, hash, convertASN1toPEM, verifySignature } = require('../utils');
+const {
+    U2F_USER_PRESENTED,
+    hash,
+    ConvertASN1toPEM,
+    verifySignature,
+    ConvertCOSEPublicKeyToRawPKCSECDHAKey,
+} = require('../utils');
 
 exports.parseFidoU2FKey = (authenticatorKey, clientDataJSON) => {
     const authenticatorData = parseAttestationData(authenticatorKey.authData);
@@ -8,18 +13,23 @@ exports.parseFidoU2FKey = (authenticatorKey, clientDataJSON) => {
         throw new Error('User was NOT presented during authentication!');
     }
 
-    const clientDataHash = hash('SHA256', Buffer.from(clientDataJSON, 'base64'));
+    const clientDataHash = hash(
+        'SHA256',
+        Buffer.from(clientDataJSON, 'base64')
+    );
     const reservedByte = Buffer.from([0x00]);
-    const publicKey = convertCOSEPublicKeyToRawPKCSECDHAKey(authenticatorData.COSEPublicKey);
+    const publicKey = ConvertCOSEPublicKeyToRawPKCSECDHAKey(
+        authenticatorData.COSEPublicKey
+    );
     const signatureBase = Buffer.concat([
         reservedByte,
         authenticatorData.rpIdHash,
         clientDataHash,
         authenticatorData.credID,
-        publicKey
+        publicKey,
     ]);
 
-    const PEMCertificate = convertASN1toPEM(authenticatorKey.attStmt.x5c[0]);
+    const PEMCertificate = ConvertASN1toPEM(authenticatorKey.attStmt.x5c[0]);
     const signature = authenticatorKey.attStmt.sig;
 
     const verified = verifySignature(signature, signatureBase, PEMCertificate);
@@ -29,35 +39,43 @@ exports.parseFidoU2FKey = (authenticatorKey, clientDataJSON) => {
             fmt: 'fido-u2f',
             publicKey: publicKey.toString('base64'),
             counter: authenticatorData.counter,
-            credID: authenticatorData.credID.toString('base64')
+            credID: authenticatorData.credID.toString('base64'),
         };
     }
 
     return undefined;
 };
 
-exports.validateFidoU2FKey = (authenticatorDataBuffer, key, clientDataJSON, base64Signature) => {
+exports.validateFidoU2FKey = (
+    authenticatorDataBuffer,
+    key,
+    clientDataJSON,
+    base64Signature
+) => {
     const authenticatorData = parseAssertionData(authenticatorDataBuffer);
 
     if (!(authenticatorData.flags & U2F_USER_PRESENTED)) {
         throw new Error('User was NOT presented durring authentication!');
     }
 
-    const clientDataHash = hash('SHA256', Buffer.from(clientDataJSON, 'base64'));
+    const clientDataHash = hash(
+        'SHA256',
+        Buffer.from(clientDataJSON, 'base64')
+    );
     const signatureBase = Buffer.concat([
         authenticatorData.rpIdHash,
         authenticatorData.flagsBuf,
         authenticatorData.counterBuf,
-        clientDataHash
+        clientDataHash,
     ]);
 
-    const publicKey = convertASN1toPEM(Buffer.from(key.publicKey, 'base64'));
+    const publicKey = ConvertASN1toPEM(Buffer.from(key.publicKey, 'base64'));
     const signature = Buffer.from(base64Signature, 'base64');
 
     return verifySignature(signature, signatureBase, publicKey);
 };
 
-const parseAttestationData = buffer => {
+const parseAttestationData = (buffer) => {
     const rpIdHash = buffer.slice(0, 32);
     buffer = buffer.slice(32);
     const flagsBuf = buffer.slice(0, 1);
@@ -83,11 +101,11 @@ const parseAttestationData = buffer => {
         counterBuf,
         aaguid,
         credID,
-        COSEPublicKey
+        COSEPublicKey,
     };
 };
 
-const parseAssertionData = buffer => {
+const parseAssertionData = (buffer) => {
     const rpIdHash = buffer.slice(0, 32);
     buffer = buffer.slice(32);
     const flagsBuf = buffer.slice(0, 1);
@@ -102,37 +120,6 @@ const parseAssertionData = buffer => {
         flagsBuf,
         flags,
         counter,
-        counterBuf
+        counterBuf,
     };
-};
-
-/**
- * Takes COSE encoded public key and converts it to RAW PKCS ECDHA key
- * @param  {Buffer} cosePublicKey - COSE encoded public key
- * @return {Buffer}               - RAW PKCS encoded public key
- */
-const convertCOSEPublicKeyToRawPKCSECDHAKey = cosePublicKey => {
-    /* 
-    +------+-------+-------+---------+----------------------------------+
-    | name | key   | label | type    | description                      |
-    |      | type  |       |         |                                  |
-    +------+-------+-------+---------+----------------------------------+
-    | crv  | 2     | -1    | int /   | EC Curve identifier - Taken from |
-    |      |       |       | tstr    | the COSE Curves registry         |
-    |      |       |       |         |                                  |
-    | x    | 2     | -2    | bstr    | X Coordinate                     |
-    |      |       |       |         |                                  |
-    | y    | 2     | -3    | bstr /  | Y Coordinate                     |
-    |      |       |       | bool    |                                  |
-    |      |       |       |         |                                  |
-    | d    | 2     | -4    | bstr    | Private key                      |
-    +------+-------+-------+---------+----------------------------------+
-    */
-
-    const coseStruct = decodeAllSync(cosePublicKey)[0];
-    const tag = Buffer.from([0x04]);
-    const x = coseStruct.get(-2);
-    const y = coseStruct.get(-3);
-
-    return Buffer.concat([tag, x, y]);
 };
