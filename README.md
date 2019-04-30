@@ -11,7 +11,8 @@ For a more thorough introduction see these two nice articles:
 ## Installation
 
 ```js
-npm install webauthn
+npm install @webauthn/client
+npm install @webauthn/server
 ```
 
 ## usage
@@ -22,18 +23,15 @@ Webauthn is composed of two parts @webauthn/client and @webauthn/server
 
 ```js
 import { 
-    registrationChallengeToPublicKey, 
-    loginChallengeToPublicKey, 
-    publicKeyToJSON 
+    solveRegistrationChallenge,
+    solveLoginChallenge
 } from '@webauthn/client';
 ```
 
-- registrationChallengeToPublicKey:
-    convert the challenge returned by the server on the register route into a publicKey
-- publicKeyToJSON:
-    convert the publicKey to JSON.
-- loginChallengeToPublicKey:
-    convert the challenge returned by the server on the login route into a publicKey
+- solveRegistrationChallenge:
+    convert the challenge returned by the server on the register route into the response to be returned
+- solveLoginChallenge:
+    convert the challenge returned by the server on the login route into the response to be returned
 
 See an example in example/front
 
@@ -41,21 +39,24 @@ See an example in example/front
 
 ```js
 import {
-    requestRegistrationChallenge,
-    registrationCredentialsToUserKey,
-    requestLoginChallenge,
-    loginCredentialsToChallenge
+    parseRegisterRequest,
+    generateRegistrationChallenge,
+    parseLoginRequest,
+    generateLoginChallenge,
+    verifyAuthenticatorAssertion,
 } from '@webauthn/server';
 ```
 
-- requestRegistrationChallenge:
-    Generate a challenge from a relying party and an user `{ relyingParty, user }`
-- registrationCredentialsToUserKey:
-    convert credential to user key
-- requestLoginChallenge:
-    generate challenge from userKeys. Return both the challenge and the allowCredentials
-- loginCredentialsToChallenge:
-    convert the credential from the client to challenge to be returned to it
+- parseRegisterRequest:
+    Extract challenge and key from the register request body. The challenge allow to retrieve the user, and the key must be stocked server side linked to the user.
+- generateRegistrationChallenge:
+    Generate a challenge from a relying party and an user `{ relyingParty, user }` to be sent back to the client, in order to register
+- parseLoginRequest:
+    Extract challenge and KeyId from the login request.
+- generateLoginChallenge:
+    Generate challengeResponse from the key sent by the client during login. challengeResponse.challenge should be stocked serverside linked to the corresponding user
+- verifyAuthenticatorAssertion
+    Take the loginChallenge request body and the key stocked with the user, and return true if it passes the authenticator assertion
 
 See an example in example/server
 
