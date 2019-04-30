@@ -14,7 +14,7 @@ For a more thorough introduction see these two nice articles:
 npm install webauthn
 ```
 
-## usage
+## Usage
 
 Webauthn is composed of two parts @webauthn/client and @webauthn/server
 
