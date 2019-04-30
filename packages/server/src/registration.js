@@ -1,8 +1,49 @@
-const { randomBase64Buffer } = require('./utils');
-const { validateRegistrationCredentials } = require('./validation');
-const { getAuthenticatorKeyId, parseAuthenticatorKey } = require('./authenticatorKey');
+const { decodeAllSync } = require('cbor');
 
-exports.requestRegistrationChallenge = ({ relyingParty, user } = {}) => {
+const { randomBase64Buffer } = require('./utils');
+const { getChallengeFromClientData } = require('./getChallengeFromClientData');
+const { parseFidoU2FKey } = require('./authenticatorKey/parseFidoU2FKey');
+const { parseFidoPackedKey } = require('./authenticatorKey/parseFidoPackedKey');
+const { validateRegistrationCredentials } = require('./validation');
+
+const parseAuthenticatorKey = (webAuthnResponse) => {
+    const authenticatorKeyBuffer = Buffer.from(
+        webAuthnResponse.attestationObject,
+        'base64'
+    );
+    const authenticatorKey = decodeAllSync(authenticatorKeyBuffer)[0];
+
+    if (authenticatorKey.fmt === 'fido-u2f') {
+        return parseFidoU2FKey(
+            authenticatorKey,
+            webAuthnResponse.clientDataJSON
+        );
+    }
+
+    if (authenticatorKey.fmt === 'packed') {
+        return parseFidoPackedKey(
+            authenticatorKey,
+            webAuthnResponse.clientDataJSON
+        );
+    }
+
+    return undefined;
+};
+
+exports.parseRegisterRequest = (body) => {
+    if (!validateRegistrationCredentials(body)) {
+        return {};
+    }
+    const challenge = getChallengeFromClientData(body.response.clientDataJSON);
+    const key = parseAuthenticatorKey(body.response);
+
+    return {
+        challenge,
+        key,
+    };
+};
+
+exports.generateRegistrationChallenge = ({ relyingParty, user } = {}) => {
     if (!relyingParty || !relyingParty.name || typeof relyingParty.name !== 'string') {
         throw new Error('The typeof relyingParty.name should be a string');
     }
@@ -30,15 +71,4 @@ exports.requestRegistrationChallenge = ({ relyingParty, user } = {}) => {
             }
         ]
     };
-};
-
-exports.registrationCredentialsToUserKey = credentials => {
-    if (!validateRegistrationCredentials(credentials)) {
-        throw new Error('Registration credentials are invalid');
-    }
-
-    const id = getAuthenticatorKeyId(credentials.id);
-    const key = parseAuthenticatorKey(credentials.response);
-
-    return { id, key };
 };

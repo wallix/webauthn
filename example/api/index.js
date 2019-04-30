@@ -5,62 +5,80 @@ const spdy = require('spdy');
 const cors = require('cors');
 const bodyParser = require('body-parser');
 
+const userRepository = require('./userRepository');
 const {
-    requestRegistrationChallenge,
-    registrationCredentialsToUserKey,
-    requestLoginChallenge,
-    loginCredentialsToChallenge
-} = require('../../packages/server/src');
+    generateRegistrationChallenge,
+    parseRegisterRequest,
+    generateLoginChallenge,
+    parseLoginRequest,
+    verifyAuthenticatorAssertion,
+} = require('@webauthn/server');
 
 const app = express();
 app.use(cors());
-app.use(bodyParser.json());
-let users = [];
+app.use(bodyParser());
 
-app.post('/register', (req, res) => {
-    const { id, email, credentials } = req.body;
+app.post('/request-register', (req, res) => {
+    const { id, email } = req.body;
 
-    if (credentials) {
-        const key = registrationCredentialsToUserKey(credentials);
-
-        const user = {
-            email,
-            keys: [key]
-        };
-
-        users = [...users.filter(user => user.email !== email), user];
-
-        return res.send({ loggedIn: true });
-    }
-
-    const challenge = requestRegistrationChallenge({
+    const challengeResponse = generateRegistrationChallenge({
         relyingParty: { name: 'ACME' },
         user: { id, name: email }
     });
 
-    res.send(challenge);
+    userRepository.create({
+        id, 
+        email,
+        challenge: challengeResponse.challenge,
+    })
+
+    res.send(challengeResponse);
 });
 
-app.post('/login', (req, res) => {
-    const { email, credentials } = req.body;
+app.post('/register', (req, res) => {
+    const { key, challenge } = parseRegisterRequest(req.body);
 
-    if (credentials) {
-        const challenge = loginCredentialsToChallenge(credentials);
-        const user = users.find(user => user.lastChallenge === challenge);
-
-        return res.send({ loggedIn: !!user });
-    }
-
-    const user = users.find(user => user.email === email);
+    const user = userRepository.findByChallenge(challenge);
 
     if (!user) {
         return res.sendStatus(400);
     }
 
-    const { challenge, allowCredentials } = requestLoginChallenge(user.keys);
+    userRepository.addKeyToUser(user, key);
 
-    user.lastChallenge = challenge;
-    res.send({ challenge, allowCredentials });
+    return res.send({ loggedIn: true });
+});
+
+app.post('/login', (req, res) => {
+    const { email } = req.body;
+
+    const user = userRepository.findByEmail(email);
+
+    if (!user) {
+        return res.sendStatus(400);
+    }
+
+    const assertionChallenge = generateLoginChallenge(user.key);
+
+    userRepository.updateUserChallenge(user, assertionChallenge.challenge);
+
+    res.send(assertionChallenge);
+});
+
+app.post('/login-challenge', (req, res) => {
+    const { challenge, keyId } = parseLoginRequest(req.body);
+    if (!challenge) {
+        return res.sendStatus(400);
+    }
+    const user = userRepository.findByChallenge(challenge);
+
+    if (!user || !user.key || user.key.credID !== keyId) {
+        return res.sendStatus(400);
+    }
+
+    const loggedIn = verifyAuthenticatorAssertion(req.body, user.key);
+
+    return res.send({ loggedIn });
 });
 
 const config = {

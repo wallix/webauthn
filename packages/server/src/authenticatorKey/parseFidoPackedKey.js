@@ -1,10 +1,14 @@
-const jsrsasign = require('jsrsasign');
+const { X509 } = require('jsrsasign');
 const { createVerify } = require('crypto');
 
-const { hash, convertASN1toPEM } = require('../utils');
+const {
+    hash,
+    convertASN1toPEM,
+    convertCOSEPublicKeyToRawPKCSECDHAKey,
+} = require('../utils');
 
 const getCertificateInfo = certificate => {
-    const subjectCert = new jsrsasign.X509();
+    const subjectCert = new X509();
     subjectCert.readCertPEM(certificate);
 
     const subjectString = subjectCert.getSubjectString();
@@ -22,7 +26,7 @@ const getCertificateInfo = certificate => {
     return {
         subject,
         version,
-        basicConstraintsCA
+        basicConstraintsCA,
     };
 };
 
@@ -37,7 +41,7 @@ const parseAttestationData = buffer => {
         uv: !!(flagsInt & 0x04),
         at: !!(flagsInt & 0x40),
         ed: !!(flagsInt & 0x80),
-        flagsInt
+        flagsInt,
     };
 
     const counterBuf = buffer.slice(0, 4);
@@ -67,22 +71,32 @@ const parseAttestationData = buffer => {
         counterBuf,
         aaguid,
         credID,
-        COSEPublicKey
+        COSEPublicKey,
     };
 };
 
 exports.parseFidoPackedKey = (authenticatorKey, clientDataJSON) => {
     const authenticatorData = parseAttestationData(authenticatorKey.authData);
 
-    const clientDataHash = hash('sha256', Buffer.from(clientDataJSON, 'base64'));
-    const signatureBaseBuffer = Buffer.concat([authenticatorKey.authData, clientDataHash]);
+    const clientDataHash = hash(
+        'sha256',
+        Buffer.from(clientDataJSON, 'base64')
+    );
+    const signatureBaseBuffer = Buffer.concat([
+        authenticatorKey.authData,
+        clientDataHash,
+    ]);
 
     const signatureBuffer = authenticatorKey.attStmt.sig;
     let publicKey;
 
     if (authenticatorKey.attStmt.x5c) {
         /* ----- Verify FULL attestation ----- */
-        publicKey = verifyFullAttestation(authenticatorKey, signatureBaseBuffer, signatureBuffer);
+        publicKey = verifyFullAttestation(
+            authenticatorKey,
+            signatureBaseBuffer,
+            signatureBuffer
+        );
     } else if (authenticatorKey.attStmt.ecdaaKeyId) {
         throw new Error('ECDAA is not supported yet!');
     } else {
@@ -95,21 +109,33 @@ exports.parseFidoPackedKey = (authenticatorKey, clientDataJSON) => {
 
     return {
         fmt: 'packed',
-        publicKey,
+        publicKey: publicKey.toString('base64'),
         counter: authenticatorData.counter,
-        credID: authenticatorData.credID.toString('base64')
+        credID: authenticatorData.credID.toString('base64'),
     };
 };
 
-exports.validateFidoPackedKey = (authenticatorDataBuffer, key, clientDataJSON, base64Signature) => {
+exports.validateFidoPackedKey = (
+    authenticatorDataBuffer,
+    key,
+    clientDataJSON,
+    base64Signature
+) => {
     const authenticatorData = parseAttestationData(authenticatorDataBuffer);
 
-    if (!authenticatorData.flags.up) {
+    // tslint:disable-next-line
+    if (!(authenticatorData.flags.up)) {
         throw new Error('User was NOT presented durring authentication!');
     }
 
-    const clientDataHash = hash('SHA256', Buffer.from(clientDataJSON, 'base64'));
-    const signatureBaseBuffer = Buffer.concat([authenticatorDataBuffer, clientDataHash]);
+    const clientDataHash = hash(
+        'SHA256',
+        Buffer.from(clientDataJSON, 'base64')
+    );
+    const signatureBaseBuffer = Buffer.concat([
+        authenticatorDataBuffer,
+        clientDataHash,
+    ]);
 
     const publicKey = convertASN1toPEM(Buffer.from(key.publicKey, 'base64'));
     const signatureBuffer = Buffer.from(base64Signature, 'base64');
@@ -222,11 +248,22 @@ exports.validateFidoPackedKey = (authenticatorDataBuffer, key, clientDataJSON, b
 //     throw new Error('Invalid COSE type!');
 // }
 
-function verifyFullAttestation(authenticatorKey, signatureBaseBuffer, signatureBuffer) {
+function verifyFullAttestation(
+    authenticatorKey,
+    signatureBaseBuffer,
+    signatureBuffer
+) {
+    const authenticatorData = parseAttestationData(authenticatorKey.authData);
+
+    const publicKey = convertCOSEPublicKeyToRawPKCSECDHAKey(
+        authenticatorData.COSEPublicKey
+    );
     const leafCert = convertASN1toPEM(authenticatorKey.attStmt.x5c[0]);
     const certInfo = getCertificateInfo(leafCert);
     if (certInfo.subject.OU !== 'Authenticator Attestation') {
-        throw new Error('Batch certificate OU MUST be set strictly to "Authenticator Attestation"!');
+        throw new Error(
+            'Batch certificate OU MUST be set strictly to "Authenticator Attestation"!'
+        );
     }
     if (!certInfo.subject.CN) {
         throw new Error('Batch certificate CN MUST no be empty!');
@@ -235,10 +272,14 @@ function verifyFullAttestation(authenticatorKey, signatureBaseBuffer, signatureB
         throw new Error('Batch certificate CN MUST no be empty!');
     }
     if (!certInfo.subject.C || certInfo.subject.C.length !== 2) {
-        throw new Error('Batch certificate C MUST be set to two character ISO 3166 code!');
+        throw new Error(
+            'Batch certificate C MUST be set to two character ISO 3166 code!'
+        );
     }
     if (certInfo.basicConstraintsCA) {
-        throw new Error('Batch certificate basic constraints CA MUST be false!');
+        throw new Error(
+            'Batch certificate basic constraints CA MUST be false!'
+        );
     }
     if (certInfo.version !== 3) {
         throw new Error('Batch certificate version MUST be 3(ASN1 2)!');
@@ -248,7 +289,7 @@ function verifyFullAttestation(authenticatorKey, signatureBaseBuffer, signatureB
         .verify(leafCert, signatureBuffer);
 
     if (signatureIsValid) {
-        return leafCert;
+        return publicKey;
     }
 
     return undefined;

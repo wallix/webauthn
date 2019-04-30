@@ -1,14 +1,15 @@
 {
-    "name": "api",
-    "version": "1.0.0",
+    "name": "@webauthn/example-api",
+    "version": "0.1.0",
     "main": "index.js",
-    "license": "MIT",
+    "license": "Apache",
     "private": true,
     "scripts": {
         "start": "node index.js",
         "dev": "nodemon -w . index.js"
     },
     "dependencies": {
+        "@webauthn/server": "^0.1.0",
         "body-parser": "^1.18.3",
         "cors": "^2.8.5",
         "express": "^4.16.4",
