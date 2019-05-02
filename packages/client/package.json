@@ -1,9 +1,18 @@
 {
   "name": "@webauthn/client",
-  "version": "0.1.0",
-  "main": "src/index.js",
+  "version": "0.1.1",
+  "main": "dist/main.js",
+  "module": "src/index.js",
+  "scripts": {
+    "build": "webpack --mode=production",
+    "prepublish": "webpack --mode=production"
+  },
   "license": "Apache",
   "dependencies": {
-    "unibabel": "^2.1.7"
+    "unibabel": "^2.1.7",
+    "webpack": "4.30.0"
+  },
+  "devDependencies": {
+    "webpack-cli": "^3.3.1"
   }
 }
