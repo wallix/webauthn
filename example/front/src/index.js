@@ -30,14 +30,12 @@ registerButton.onclick = async () => {
         }
     ).then(response => response.json());
 
-
     if (loggedIn) {
         displayMessage('registration successful');
-    } else {
-        displayMessage('registration failed');
+        return;
     }
+    displayMessage('registration failed');
 };
-
 
 loginButton.onclick = async () => {
     const challenge = await fetch('https://localhost:8000/login', {
@@ -64,7 +62,7 @@ loginButton.onclick = async () => {
 
     if (loggedIn) {
         displayMessage('You are logged in');
-    } else {
-        displayMessage('Invalid credential');
+        return;
     }
+    displayMessage('Invalid credential');
 };

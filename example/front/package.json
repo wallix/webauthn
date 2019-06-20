@@ -10,6 +10,8 @@
         "http-server": "0.11.1"
     },
     "scripts": {
-        "start": "react-scripts start"
+        "build-dev": "webpack --mode=development --watch",
+        "prestart": "webpack --mode=development",
+        "start": "http-server ./dist"
     }
 }
