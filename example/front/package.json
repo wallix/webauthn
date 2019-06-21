@@ -5,26 +5,13 @@
     "license": "Apache",
     "dependencies": {
         "@webauthn/client": "0.1.0",
-        "react": "^16.8.4",
-        "react-dom": "^16.8.4",
-        "react-request": "^3.1.2",
-        "react-scripts": "2.1.8",
-        "unibabel": "^2.1.7"
+        "webpack": "4.35.0",
+        "webpack-cli": "3.3.4",
+        "http-server": "0.11.1"
     },
     "scripts": {
-        "prestart": "(cat ../tls/localhost.pem ../tls/localhost-key.pem > ./node_modules/webpack-dev-server/ssl/server.pem) || :",
-        "start": "react-scripts start",
-        "build": "react-scripts build",
-        "test": "react-scripts test",
-        "eject": "react-scripts eject"
-    },
-    "eslintConfig": {
-        "extends": "react-app"
-    },
-    "browserslist": [
-        ">0.2%",
-        "not dead",
-        "not ie <= 11",
-        "not op_mini all"
-    ]
+        "build-dev": "webpack --mode=development --watch",
+        "prestart": "webpack --mode=development",
+        "start": "http-server ./dist"
+    }
 }
