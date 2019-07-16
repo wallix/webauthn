@@ -10,7 +10,7 @@
   "license": "Apache-2.0",
   "dependencies": {
     "unibabel": "^2.1.7",
-    "webpack": "4.30.0"
+    "webpack": "^4.30.0"
   },
   "devDependencies": {
     "webpack-cli": "^3.3.1"
