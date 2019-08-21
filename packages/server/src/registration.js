@@ -43,7 +43,7 @@ exports.parseRegisterRequest = (body) => {
     };
 };
 
-exports.generateRegistrationChallenge = ({ relyingParty, user } = {}) => {
+exports.generateRegistrationChallenge = ({ relyingParty, user, attestation } = {}) => {
     if (!relyingParty || !relyingParty.name || typeof relyingParty.name !== 'string') {
         throw new Error('The typeof relyingParty.name should be a string');
     }
@@ -63,7 +63,7 @@ exports.generateRegistrationChallenge = ({ relyingParty, user } = {}) => {
             displayName: user.displayName || user.name,
             name: user.name
         },
-        attestation: 'direct',
+        attestation: attestation || 'direct',
         pubKeyCredParams: [
             {
                 type: 'public-key',
