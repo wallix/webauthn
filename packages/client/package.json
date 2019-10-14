@@ -5,7 +5,8 @@
   "module": "src/index.js",
   "repository": {
     "type": "git",
-    "url": "https://github.com/wallix/webauthn/tree/master/packages/client"
+    "url": "https://github.com:wallix/webauthn.git",
+    "directory": "packages/client"
   },
   "scripts": {
     "build": "webpack --mode=production",
