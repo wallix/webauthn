@@ -8,8 +8,11 @@
     "url": "https://github.com:wallix/webauthn.git",
     "directory": "packages/server"
   },
+  "engines": {
+    "node": ">=10 <11"
+  },
   "dependencies": {
-    "cbor": "^4.1.5",
+    "cbor": "^5.0.1",
     "jsrsasign": "^8.0.12"
   }
 }
