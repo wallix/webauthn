@@ -3,6 +3,11 @@
   "version": "0.1.2",
   "main": "dist/main.js",
   "module": "src/index.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com:wallix/webauthn.git",
+    "directory": "packages/client"
+  },
   "scripts": {
     "build": "webpack --mode=production",
     "prepublish": "webpack --mode=production"
