@@ -16,7 +16,7 @@ const {
 
 const app = express();
 app.use(cors());
-app.use(bodyParser());
+app.use(bodyParser.json());
 
 app.post('/request-register', (req, res) => {
     const { id, email } = req.body;
@@ -27,7 +27,7 @@ app.post('/request-register', (req, res) => {
     });
 
     userRepository.create({
-        id, 
+        id,
         email,
         challenge: challengeResponse.challenge,
     })
