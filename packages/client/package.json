@@ -15,6 +15,7 @@
   "license": "Apache-2.0",
   "dependencies": {
     "core-js": "3",
+    "lerna": "^3.14.1",
     "regenerator-runtime": "^0.13.3",
     "unibabel": "^2.1.7",
     "webpack": "^4.30.0"
