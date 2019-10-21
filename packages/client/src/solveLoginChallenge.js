@@ -1,4 +1,4 @@
-import  { publicKeyCredentialToJSON } from './utils';
+import { publicKeyCredentialToJSON } from './utils';
 
 const loginChallengeToPublicKey = getAssert => {
     const { Unibabel } = require('unibabel');

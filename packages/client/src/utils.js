@@ -14,7 +14,7 @@ export const publicKeyCredentialToJSON = (
     if (item instanceof Object) {
         const obj = {};
 
-        // tslint:disable-next-line
+        // eslint-disable-next-line guard-for-in
         for (const key in item) {
             obj[key] = publicKeyCredentialToJSON(item[key]);
         }

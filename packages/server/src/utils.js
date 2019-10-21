@@ -68,7 +68,7 @@ exports.convertASN1toPEM = pkBuffer => {
  * @return {Buffer}               - RAW PKCS encoded public key
  */
 exports.convertCOSEPublicKeyToRawPKCSECDHAKey = cosePublicKey => {
-    /* 
+    /*
     +------+-------+-------+---------+----------------------------------+
     | name | key   | label | type    | description                      |
     |      | type  |       |         |                                  |

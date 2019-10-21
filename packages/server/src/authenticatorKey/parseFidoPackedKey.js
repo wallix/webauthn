@@ -123,8 +123,7 @@ exports.validateFidoPackedKey = (
 ) => {
     const authenticatorData = parseAttestationData(authenticatorDataBuffer);
 
-    // tslint:disable-next-line
-    if (!(authenticatorData.flags.up)) {
+    if (!authenticatorData.flags.up) {
         throw new Error('User was NOT presented durring authentication!');
     }
 
