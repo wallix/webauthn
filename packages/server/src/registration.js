@@ -43,13 +43,21 @@ exports.parseRegisterRequest = (body) => {
     };
 };
 
-exports.generateRegistrationChallenge = ({ relyingParty, user, attestation = 'direct' } = {}) => {
+exports.generateRegistrationChallenge = ({ relyingParty, user, authenticator = 'cross-platform',attestation = 'direct' } = {}) => {
     if (!relyingParty || !relyingParty.name || typeof relyingParty.name !== 'string') {
         throw new Error('The typeof relyingParty.name should be a string');
     }
 
     if (!user || !user.id || !user.name || typeof user.id !== 'string' || typeof user.name !== 'string') {
         throw new Error('The user should have an id (string) and a name (string)');
+    }
+
+    if (!(['cross-platform', 'platform'].includes(authenticator))) {
+        authenticator = 'cross-platform';
+    }
+
+    if (!(['none', 'direct', 'indirect'].includes(attestation))) {
+        attestation = 'direct';
     }
 
     return {
@@ -69,6 +77,9 @@ exports.generateRegistrationChallenge = ({ relyingParty, user, attestation = 'di
                 type: 'public-key',
                 alg: -7 // "ES256" IANA COSE Algorithms registry
             }
-        ]
+        ],
+        authenticatorSelection: {
+            authenticatorAttachment: authenticator
+        }
     };
 };
