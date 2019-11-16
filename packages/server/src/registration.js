@@ -6,7 +6,7 @@ const { parseFidoU2FKey } = require('./authenticatorKey/parseFidoU2FKey');
 const { parseFidoPackedKey } = require('./authenticatorKey/parseFidoPackedKey');
 const { validateRegistrationCredentials } = require('./validation');
 
-const parseAuthenticatorKey = (webAuthnResponse) => {
+const parseAuthenticatorKey = webAuthnResponse => {
     const authenticatorKeyBuffer = Buffer.from(
         webAuthnResponse.attestationObject,
         'base64'
@@ -30,7 +30,7 @@ const parseAuthenticatorKey = (webAuthnResponse) => {
     return undefined;
 };
 
-exports.parseRegisterRequest = (body) => {
+exports.parseRegisterRequest = body => {
     if (!validateRegistrationCredentials(body)) {
         return {};
     }
@@ -39,17 +39,33 @@ exports.parseRegisterRequest = (body) => {
 
     return {
         challenge,
-        key,
+        key
     };
 };
 
-exports.generateRegistrationChallenge = ({ relyingParty, user, attestation = 'direct' } = {}) => {
-    if (!relyingParty || !relyingParty.name || typeof relyingParty.name !== 'string') {
+exports.generateRegistrationChallenge = ({
+    relyingParty,
+    user,
+    attestation = 'direct'
+} = {}) => {
+    if (
+        !relyingParty ||
+        !relyingParty.name ||
+        typeof relyingParty.name !== 'string'
+    ) {
         throw new Error('The typeof relyingParty.name should be a string');
     }
 
-    if (!user || !user.id || !user.name || typeof user.id !== 'string' || typeof user.name !== 'string') {
-        throw new Error('The user should have an id (string) and a name (string)');
+    if (
+        !user ||
+        !user.id ||
+        !user.name ||
+        typeof user.id !== 'string' ||
+        typeof user.name !== 'string'
+    ) {
+        throw new Error(
+            'The user should have an id (string) and a name (string)'
+        );
     }
 
     return {

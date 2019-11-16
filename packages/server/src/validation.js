@@ -14,7 +14,8 @@ const validateCredentials = credentials => {
 };
 
 exports.validateRegistrationCredentials = credentials =>
-    validateCredentials(credentials) && !!credentials.response.attestationObject;
+    validateCredentials(credentials) &&
+    !!credentials.response.attestationObject;
 
 exports.validateLoginCredentials = credentials =>
     validateCredentials(credentials) && credentials.response.authenticatorData;

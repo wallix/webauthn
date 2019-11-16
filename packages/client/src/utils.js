@@ -1,6 +1,4 @@
-export const publicKeyCredentialToJSON = (
-    item
-) => {
+export const publicKeyCredentialToJSON = item => {
     if (item instanceof Array) {
         return item.map(publicKeyCredentialToJSON);
     }

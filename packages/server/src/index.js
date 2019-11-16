@@ -1,5 +1,12 @@
-const { generateRegistrationChallenge, parseRegisterRequest } = require('./registration');
-const { generateLoginChallenge, parseLoginRequest, verifyAuthenticatorAssertion } = require('./login');
+const {
+    generateRegistrationChallenge,
+    parseRegisterRequest
+} = require('./registration');
+const {
+    generateLoginChallenge,
+    parseLoginRequest,
+    verifyAuthenticatorAssertion
+} = require('./login');
 
 exports.generateRegistrationChallenge = generateRegistrationChallenge;
 exports.generateLoginChallenge = generateLoginChallenge;

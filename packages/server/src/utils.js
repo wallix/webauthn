@@ -41,7 +41,7 @@ exports.convertASN1toPEM = pkBuffer => {
                 '3059301306072a8648ce3d020106082a8648ce3d030107034200',
                 'hex'
             ),
-            pkBuffer,
+            pkBuffer
         ]);
 
         type = 'PUBLIC KEY';
@@ -96,11 +96,7 @@ exports.convertCOSEPublicKeyToRawPKCSECDHAKey = cosePublicKey => {
 /**
  * Takes signature, data and PEM public key and tries to verify signature
  */
-exports.verifySignature = (
-    signature,
-    data,
-    publicKey
-) => {
+exports.verifySignature = (signature, data, publicKey) => {
     return createVerify('SHA256')
         .update(data)
         .verify(publicKey, signature);
@@ -113,7 +109,7 @@ exports.randomBase64Buffer = (len = 32) => {
 };
 
 // parse base64 from the browser
-exports.parseBrowserBufferString = (key_id) => {
+exports.parseBrowserBufferString = key_id => {
     const buffer = Buffer.from(key_id, 'base64');
     return buffer.toString('base64');
 };

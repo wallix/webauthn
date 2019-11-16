@@ -4,7 +4,7 @@ const { createVerify } = require('crypto');
 const {
     hash,
     convertASN1toPEM,
-    convertCOSEPublicKeyToRawPKCSECDHAKey,
+    convertCOSEPublicKeyToRawPKCSECDHAKey
 } = require('../utils');
 
 const getCertificateInfo = certificate => {
@@ -26,7 +26,7 @@ const getCertificateInfo = certificate => {
     return {
         subject,
         version,
-        basicConstraintsCA,
+        basicConstraintsCA
     };
 };
 
@@ -41,7 +41,7 @@ const parseAttestationData = buffer => {
         uv: !!(flagsInt & 0x04),
         at: !!(flagsInt & 0x40),
         ed: !!(flagsInt & 0x80),
-        flagsInt,
+        flagsInt
     };
 
     const counterBuf = buffer.slice(0, 4);
@@ -71,7 +71,7 @@ const parseAttestationData = buffer => {
         counterBuf,
         aaguid,
         credID,
-        COSEPublicKey,
+        COSEPublicKey
     };
 };
 
@@ -84,7 +84,7 @@ exports.parseFidoPackedKey = (authenticatorKey, clientDataJSON) => {
     );
     const signatureBaseBuffer = Buffer.concat([
         authenticatorKey.authData,
-        clientDataHash,
+        clientDataHash
     ]);
 
     const signatureBuffer = authenticatorKey.attStmt.sig;
@@ -111,7 +111,7 @@ exports.parseFidoPackedKey = (authenticatorKey, clientDataJSON) => {
         fmt: 'packed',
         publicKey: publicKey.toString('base64'),
         counter: authenticatorData.counter,
-        credID: authenticatorData.credID.toString('base64'),
+        credID: authenticatorData.credID.toString('base64')
     };
 };
 
@@ -133,7 +133,7 @@ exports.validateFidoPackedKey = (
     );
     const signatureBaseBuffer = Buffer.concat([
         authenticatorDataBuffer,
-        clientDataHash,
+        clientDataHash
     ]);
 
     const publicKey = convertASN1toPEM(Buffer.from(key.publicKey, 'base64'));

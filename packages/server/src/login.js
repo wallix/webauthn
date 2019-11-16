@@ -1,6 +1,8 @@
 const { randomBase64Buffer, parseBrowserBufferString } = require('./utils');
 const { getChallengeFromClientData } = require('./getChallengeFromClientData');
-const { validateFidoPackedKey } = require('./authenticatorKey/parseFidoPackedKey');
+const {
+    validateFidoPackedKey
+} = require('./authenticatorKey/parseFidoPackedKey');
 const { validateFidoU2FKey } = require('./authenticatorKey/parseFidoU2FKey');
 const { validateLoginCredentials } = require('./validation');
 
@@ -9,16 +11,16 @@ exports.generateLoginChallenge = key => {
     const allowCredentials = keys.map(({ credID }) => ({
         type: 'public-key',
         id: credID,
-        transports: ['usb', 'nfc', 'ble'],
+        transports: ['usb', 'nfc', 'ble']
     }));
 
     return {
         challenge: randomBase64Buffer(32),
-        allowCredentials,
+        allowCredentials
     };
 };
 
-exports.parseLoginRequest = (body) => {
+exports.parseLoginRequest = body => {
     if (!validateLoginCredentials(body)) {
         return {};
     }
@@ -27,7 +29,7 @@ exports.parseLoginRequest = (body) => {
 
     return {
         challenge,
-        keyId,
+        keyId
     };
 };
 
