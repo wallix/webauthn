@@ -46,6 +46,7 @@ exports.parseRegisterRequest = body => {
 exports.generateRegistrationChallenge = ({
     relyingParty,
     user,
+    authenticator = 'cross-platform',
     attestation = 'direct'
 } = {}) => {
     if (
@@ -68,6 +69,14 @@ exports.generateRegistrationChallenge = ({
         );
     }
 
+    if (!(['cross-platform', 'platform'].includes(authenticator))) {
+        authenticator = 'cross-platform';
+    }
+
+    if (!(['none', 'direct', 'indirect'].includes(attestation))) {
+        attestation = 'direct';
+    }
+
     return {
         challenge: randomBase64Buffer(32),
         rp: {
@@ -85,6 +94,9 @@ exports.generateRegistrationChallenge = ({
                 type: 'public-key',
                 alg: -7 // "ES256" IANA COSE Algorithms registry
             }
-        ]
+        ],
+        authenticatorSelection: {
+            authenticatorAttachment: authenticator
+        }
     };
 };
