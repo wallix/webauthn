@@ -10,8 +10,8 @@ const registrationChallengeToPublicKey = credentialsChallengeRequest => {
         ),
         user: {
             ...credentialsChallengeRequest.user,
-            id: Unibabel.base64ToBuffer(credentialsChallengeRequest.user.id),
-        },
+            id: Unibabel.base64ToBuffer(credentialsChallengeRequest.user.id)
+        }
     };
 };
 
@@ -20,7 +20,7 @@ export const solveRegistrationChallenge = async credentialsChallengeRequest => {
         credentialsChallengeRequest
     );
     const credentials = await navigator.credentials.create({
-        publicKey,
+        publicKey
     });
 
     return publicKeyCredentialToJSON(credentials);

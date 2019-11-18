@@ -3,7 +3,7 @@ const {
     hash,
     convertASN1toPEM,
     verifySignature,
-    convertCOSEPublicKeyToRawPKCSECDHAKey,
+    convertCOSEPublicKeyToRawPKCSECDHAKey
 } = require('../utils');
 
 exports.parseFidoU2FKey = (authenticatorKey, clientDataJSON) => {
@@ -26,7 +26,7 @@ exports.parseFidoU2FKey = (authenticatorKey, clientDataJSON) => {
         authenticatorData.rpIdHash,
         clientDataHash,
         authenticatorData.credID,
-        publicKey,
+        publicKey
     ]);
 
     const PEMCertificate = convertASN1toPEM(authenticatorKey.attStmt.x5c[0]);
@@ -39,7 +39,7 @@ exports.parseFidoU2FKey = (authenticatorKey, clientDataJSON) => {
             fmt: 'fido-u2f',
             publicKey: publicKey.toString('base64'),
             counter: authenticatorData.counter,
-            credID: authenticatorData.credID.toString('base64'),
+            credID: authenticatorData.credID.toString('base64')
         };
     }
 
@@ -66,7 +66,7 @@ exports.validateFidoU2FKey = (
         authenticatorData.rpIdHash,
         authenticatorData.flagsBuf,
         authenticatorData.counterBuf,
-        clientDataHash,
+        clientDataHash
     ]);
 
     const publicKey = convertASN1toPEM(Buffer.from(key.publicKey, 'base64'));
@@ -75,7 +75,7 @@ exports.validateFidoU2FKey = (
     return verifySignature(signature, signatureBase, publicKey);
 };
 
-const parseAttestationData = (buffer) => {
+const parseAttestationData = buffer => {
     const rpIdHash = buffer.slice(0, 32);
     buffer = buffer.slice(32);
     const flagsBuf = buffer.slice(0, 1);
@@ -101,11 +101,11 @@ const parseAttestationData = (buffer) => {
         counterBuf,
         aaguid,
         credID,
-        COSEPublicKey,
+        COSEPublicKey
     };
 };
 
-const parseAssertionData = (buffer) => {
+const parseAssertionData = buffer => {
     const rpIdHash = buffer.slice(0, 32);
     buffer = buffer.slice(32);
     const flagsBuf = buffer.slice(0, 1);
@@ -120,6 +120,6 @@ const parseAssertionData = (buffer) => {
         flagsBuf,
         flags,
         counter,
-        counterBuf,
+        counterBuf
     };
 };

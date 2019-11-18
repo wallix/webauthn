@@ -8,11 +8,20 @@
     "url": "https://github.com:wallix/webauthn.git",
     "directory": "packages/server"
   },
+  "scripts": {
+    "lint": "eslint --fix --ignore-pattern !.eslintrc.js src"
+  },
   "engines": {
     "node": ">=10 <11"
   },
   "dependencies": {
     "cbor": "^5.0.1",
     "jsrsasign": "^8.0.12"
+  },
+  "devDependencies": {
+    "eslint": "^6.5.1",
+    "eslint-config-prettier": "^6.5.0",
+    "eslint-plugin-prettier": "^3.1.1",
+    "prettier": "^1.19.1"
   }
 }

@@ -10,6 +10,7 @@
   },
   "scripts": {
     "build": "webpack --mode=production",
+    "lint": "eslint --fix --ignore-pattern !.eslintrc.js src",
     "prepublish": "webpack --mode=production"
   },
   "license": "Apache-2.0",
@@ -23,6 +24,10 @@
     "@babel/core": "^7.5.5",
     "@babel/preset-env": "^7.5.5",
     "babel-loader": "^8.0.6",
+    "eslint": "^6.5.1",
+    "eslint-config-prettier": "^6.5.0",
+    "eslint-plugin-prettier": "^3.1.1",
+    "prettier": "^1.19.1",
     "webpack-cli": "^3.3.1"
   }
 }

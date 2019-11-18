@@ -8,7 +8,10 @@ exports.getAuthenticatorKeyId = key_id => {
 };
 
 exports.parseAuthenticatorKey = credentials => {
-    const authenticatorKeyBuffer = Buffer.from(credentials.attestationObject, 'base64');
+    const authenticatorKeyBuffer = Buffer.from(
+        credentials.attestationObject,
+        'base64'
+    );
 
     const authenticatorKey = decodeAllSync(authenticatorKeyBuffer)[0];
 

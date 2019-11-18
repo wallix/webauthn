@@ -1,6 +1,4 @@
-export const publicKeyCredentialToJSON = (
-    item
-) => {
+export const publicKeyCredentialToJSON = item => {
     if (item instanceof Array) {
         return item.map(publicKeyCredentialToJSON);
     }
@@ -14,7 +12,7 @@ export const publicKeyCredentialToJSON = (
     if (item instanceof Object) {
         const obj = {};
 
-        // tslint:disable-next-line
+        // eslint-disable-next-line guard-for-in
         for (const key in item) {
             obj[key] = publicKeyCredentialToJSON(item[key]);
         }
