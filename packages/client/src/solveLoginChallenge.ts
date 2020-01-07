@@ -14,7 +14,7 @@ export interface AllowedCredentialJSON extends Omit<PublicKeyCredentialDescripto
  */
 export interface LoginChallengeJSON extends Omit<PublicKeyCredentialRequestOptions, 'challenge' | 'allowCredentials'> {
     challenge: string; // A base64-encoded Buffer
-    allowCredentials: AllowedCredentialJSON[];
+    allowCredentials?: AllowedCredentialJSON[];
 }
 
 /**
