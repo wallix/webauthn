@@ -1,7 +1,10 @@
 import  { publicKeyCredentialToJSON, AssertionCredential, stringToBuffer } from './utils';
 
-interface AllowedCredentialJSON extends Omit<PublicKeyCredentialDescriptor, 'id'> {
-    id: string;
+/**
+ * JSON representation of an allowed Webauthn credential
+ */
+export interface AllowedCredentialJSON extends Omit<PublicKeyCredentialDescriptor, 'id'> {
+    id: string; // A base64-encoded Buffer
 }
 
 /**
@@ -9,7 +12,7 @@ interface AllowedCredentialJSON extends Omit<PublicKeyCredentialDescriptor, 'id'
  * from the Relying Party (see `server > generateLoginChallenge()`), which responds with JSON
  * containing ArrayBuffers converted to base64-encoded strings.
  */
-interface LoginChallengeJSON extends Omit<PublicKeyCredentialRequestOptions, 'challenge' | 'allowCredentials'> {
+export interface LoginChallengeJSON extends Omit<PublicKeyCredentialRequestOptions, 'challenge' | 'allowCredentials'> {
     challenge: string; // A base64-encoded Buffer
     allowCredentials: AllowedCredentialJSON[];
 }

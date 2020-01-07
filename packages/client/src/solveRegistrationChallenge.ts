@@ -5,7 +5,7 @@ import { publicKeyCredentialToJSON, AttestationCredential, stringToBuffer } from
  * from the Relying Party (see `server > generateRegistrationChallenge()`), which responds with JSON
  * containing ArrayBuffers converted to base64-encoded strings.
  */
-interface RegistrationChallengeJSON extends Omit<PublicKeyCredentialCreationOptions, 'challenge' | 'user'> {
+export interface RegistrationChallengeJSON extends Omit<PublicKeyCredentialCreationOptions, 'challenge' | 'user'> {
     challenge: string; // A base64-encoded Buffer
     user: {
         id: string; // A base64-encoded Buffer
@@ -17,7 +17,7 @@ interface RegistrationChallengeJSON extends Omit<PublicKeyCredentialCreationOpti
 /**
  * Convert JSON-ified credential options into values for use in navigator.credentials.create()
  */
-function registrationChallengeToPublicKey (challenge: RegistrationChallengeJSON): PublicKeyCredentialCreationOptions {
+export function registrationChallengeToPublicKey (challenge: RegistrationChallengeJSON): PublicKeyCredentialCreationOptions {
     return {
         ...challenge,
         challenge: stringToBuffer(challenge.challenge),
