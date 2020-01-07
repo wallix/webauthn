@@ -48,8 +48,15 @@ type WebauthnCredentialJSON = AttestationCredentialJSON | AssertionCredentialJSO
 /**
  * Convenience method for converting an ArrayBuffer to a base64-encoded string
  */
-function bufferToString(buffer: ArrayBuffer): string {
-    return Unibabel.bufferToBase64(new Uint8Array(buffer));
+export function bufferToString(input: ArrayBuffer): string {
+    return Unibabel.bufferToBase64(new Uint8Array(input));
+}
+
+/**
+ * Convenience method for converting a base64-encoded string to an ArrayBuffer
+ */
+export function stringToBuffer(input: string): ArrayBuffer {
+    return Unibabel.base64ToBuffer(input);
 }
 
 export function publicKeyCredentialToJSON (credential: WebauthnCredential): WebauthnCredentialJSON {
