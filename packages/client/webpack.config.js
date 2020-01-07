@@ -1,23 +1,23 @@
 module.exports = [
-  {
-    module: {
-      rules: [
-        {
-          test: /\.(m?js|ts)$/,
-          exclude: /(node_modules|bower_components)/,
-          use: {
-            loader: 'babel-loader',
-          }
+    {
+        resolve: {
+            extensions: ['.ts'],
+        },
+        module: {
+            rules: [
+                {
+                    test: /\.ts$/,
+                    exclude: /(node_modules|bower_components)/,
+                    use: {
+                        loader: 'ts-loader',
+                    }
+                }
+            ]
+        },
+        output: {
+            filename: 'main.js',
+            libraryTarget: 'commonjs',
+            globalObject: 'this'
         }
-      ]
-    },
-    resolve: {
-        extensions: ['.js', '.ts'],
-    },
-    output: {
-      filename: 'main.js',
-      libraryTarget: 'umd',
-      globalObject: 'this'
     }
-  }
 ]

@@ -10,22 +10,16 @@
     "directory": "packages/client"
   },
   "scripts": {
-    "build": "webpack --mode=production && tsc",
-    "prepublish": "webpack --mode=production && tsc"
+    "build": "webpack --mode=production",
+    "prepublish": "webpack --mode=production"
   },
   "license": "Apache-2.0",
   "dependencies": {
-    "core-js": "^3.3.2",
-    "regenerator-runtime": "^0.13.3",
     "unibabel": "^2.1.7",
     "webpack": "^4.30.0"
   },
   "devDependencies": {
-    "@babel/core": "^7.5.5",
-    "@babel/plugin-proposal-object-rest-spread": "^7.7.7",
-    "@babel/preset-env": "^7.5.5",
-    "@babel/preset-typescript": "^7.7.7",
-    "babel-loader": "^8.0.6",
+    "ts-loader": "^6.2.1",
     "typescript": "^3.7.4",
     "webpack-cli": "^3.3.1"
   }
