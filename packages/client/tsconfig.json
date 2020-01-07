@@ -1,14 +1,16 @@
 {
     "compilerOptions": {
-        "module": "ES2015",
+        "module": "CommonJS",
         "target": "ES2015",
+        "lib": ["ES2015", "DOM"],
         "moduleResolution": "node",
         "strict": true,
-        "noEmit": true,
+        "emitDeclarationOnly": true,
+        "sourceMap": false,
         "declaration": true,
         "esModuleInterop": true,
         "allowSyntheticDefaultImports": true,
-        "sourceMap": false,
-        "baseUrl": "./src"
+        "baseUrl": "./src",
+        "outDir": "./dist"
     }
 }
