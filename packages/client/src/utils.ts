@@ -5,10 +5,7 @@ import { Unibabel } from 'unibabel';
  */
 export interface AttestationCredential extends PublicKeyCredential {
     rawId: ArrayBuffer;
-    response: {
-        attestationObject: ArrayBuffer;
-        clientDataJSON: ArrayBuffer;
-    }
+    response: AuthenticatorAttestationResponse;
 }
 
 /**
@@ -28,12 +25,7 @@ export interface AttestationCredentialJSON extends Omit<AttestationCredential, '
  */
 export interface AssertionCredential extends PublicKeyCredential {
     rawId: ArrayBuffer;
-    response: {
-        authenticatorData: ArrayBuffer;
-        clientDataJSON: ArrayBuffer;
-        signature: ArrayBuffer;
-        userHandle: ArrayBuffer;
-    }
+    response: AuthenticatorAssertionResponse;
 }
 
 /**
