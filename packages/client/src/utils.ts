@@ -70,6 +70,15 @@ export function publicKeyCredentialToJSON (credential: WebauthnCredential): Weba
             },
         } as AttestationCredentialJSON;
     } else {
+        /**
+         * userHandle could be null. See following:
+         * https://w3c.github.io/webauthn/#dom-authenticatorassertionresponse-userhandle
+         */
+        let userHandle;
+        if  (credential.response.userHandle !== null) {
+            userHandle = bufferToString(credential.response.userHandle);
+        }
+
         return {
             ...credential,
             rawId: bufferToString(credential.rawId),
@@ -77,7 +86,7 @@ export function publicKeyCredentialToJSON (credential: WebauthnCredential): Weba
                 authenticatorData: bufferToString(credential.response.authenticatorData),
                 clientDataJSON: bufferToString(credential.response.clientDataJSON),
                 signature: bufferToString(credential.response.signature),
-                userHandle: bufferToString(credential.response.userHandle),
+                userHandle,
             }
         } as AssertionCredentialJSON;
     }
