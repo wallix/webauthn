@@ -36,7 +36,7 @@ export interface AssertionCredentialJSON extends Omit<AssertionCredential, 'rawI
         authenticatorData: string;
         clientDataJSON: string;
         signature: string;
-        userHandle: string;
+        userHandle?: string;
     }
 }
 
@@ -54,35 +54,41 @@ export function stringToBuffer(input: string): ArrayBuffer {
     return Unibabel.base64ToBuffer(input);
 }
 
-export function credentialToJSON (credential: AttestationCredential | AssertionCredential) {
-    if ('attestationObject' in credential.response) {
-        return {
-            ...credential,
-            rawId: bufferToString(credential.rawId),
-            response: {
-                attestationObject: bufferToString(credential.response.attestationObject),
-                clientDataJSON: bufferToString(credential.response.clientDataJSON),
-            },
-        } as AttestationCredentialJSON;
-    } else {
-        /**
-         * userHandle could be null. See following:
-         * https://w3c.github.io/webauthn/#dom-authenticatorassertionresponse-userhandle
-         */
-        let userHandle;
-        if  (credential.response.userHandle !== null) {
-            userHandle = bufferToString(credential.response.userHandle);
-        }
+/**
+ * Take the output from `navigator.credentials.create` and massage it into a JSON-compatible format
+ */
+export function attestationToJSON(credential: AttestationCredential): AttestationCredentialJSON {
+    return {
+        ...credential,
+        rawId: bufferToString(credential.rawId),
+        response: {
+            attestationObject: bufferToString(credential.response.attestationObject),
+            clientDataJSON: bufferToString(credential.response.clientDataJSON),
+        },
+    };
+}
 
-        return {
-            ...credential,
-            rawId: bufferToString(credential.rawId),
-            response: {
-                authenticatorData: bufferToString(credential.response.authenticatorData),
-                clientDataJSON: bufferToString(credential.response.clientDataJSON),
-                signature: bufferToString(credential.response.signature),
-                userHandle,
-            }
-        } as AssertionCredentialJSON;
+/**
+ * Take the output from `navigator.credentials.get` and massage it into a JSON-compatible format
+ */
+export function assertionToJSON(credential: AssertionCredential): AssertionCredentialJSON {
+    /**
+     * userHandle could be null. See following:
+     * https://w3c.github.io/webauthn/#dom-authenticatorassertionresponse-userhandle
+     */
+    let userHandle;
+    if (credential.response.userHandle !== null) {
+        userHandle = bufferToString(credential.response.userHandle);
     }
-};
+
+    return {
+        ...credential,
+        rawId: bufferToString(credential.rawId),
+        response: {
+            authenticatorData: bufferToString(credential.response.authenticatorData),
+            clientDataJSON: bufferToString(credential.response.clientDataJSON),
+            signature: bufferToString(credential.response.signature),
+            userHandle,
+        }
+    };
+}

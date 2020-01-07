@@ -1,4 +1,4 @@
-import  { credentialToJSON, AssertionCredential, stringToBuffer } from './utils';
+import  { assertionToJSON, AssertionCredential, stringToBuffer, AssertionCredentialJSON } from './utils';
 
 /**
  * JSON representation of an allowed Webauthn credential
@@ -41,9 +41,9 @@ function loginChallengeToPublicKey (challenge: LoginChallengeJSON): PublicKeyCre
  * Initiate the Webauthn Assertion process, then convert the results to JSON to POST back to the
  * Relying Party (see `server > parseLoginRequest()`)
  */
-export const solveLoginChallenge = async (challenge: LoginChallengeJSON) => {
+export async function solveLoginChallenge (challenge: LoginChallengeJSON): Promise<AssertionCredentialJSON> {
     const publicKey = loginChallengeToPublicKey(challenge);
     const credential = (await navigator.credentials.get({ publicKey }) as AssertionCredential);
 
-    return credentialToJSON(credential);
+    return assertionToJSON(credential);
 };
