@@ -3,7 +3,7 @@ module.exports = [
     module: {
       rules: [
         {
-          test: /\.m?js$/,
+          test: /\.(m?js|ts)$/,
           exclude: /(node_modules|bower_components)/,
           use: {
             loader: 'babel-loader',
@@ -13,6 +13,9 @@ module.exports = [
           }
         }
       ]
+    },
+    resolve: {
+        extensions: ['.js', '.ts'],
     },
     output: {
       filename: 'main.js',
