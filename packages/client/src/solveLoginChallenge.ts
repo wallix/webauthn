@@ -1,4 +1,4 @@
-import  { publicKeyCredentialToJSON, AssertionCredential, stringToBuffer } from './utils';
+import  { credentialToJSON, AssertionCredential, stringToBuffer } from './utils';
 
 /**
  * JSON representation of an allowed Webauthn credential
@@ -43,7 +43,7 @@ function loginChallengeToPublicKey (challenge: LoginChallengeJSON): PublicKeyCre
  */
 export const solveLoginChallenge = async (challenge: LoginChallengeJSON) => {
     const publicKey = loginChallengeToPublicKey(challenge);
-    const credentials = (await navigator.credentials.get({ publicKey }) as AssertionCredential);
+    const credential = (await navigator.credentials.get({ publicKey }) as AssertionCredential);
 
-    return publicKeyCredentialToJSON(credentials);
+    return credentialToJSON(credential);
 };

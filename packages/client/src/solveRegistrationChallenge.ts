@@ -1,4 +1,4 @@
-import { publicKeyCredentialToJSON, AttestationCredential, stringToBuffer } from './utils';
+import { credentialToJSON, AttestationCredential, stringToBuffer } from './utils';
 
 /**
  * JSON-ified options to be passed into navigator.credentials.create(). These values are requested
@@ -36,5 +36,5 @@ export async function solveRegistrationChallenge (challenge: RegistrationChallen
     const publicKey = registrationChallengeToPublicKey(challenge);
     const credential = (await navigator.credentials.create({ publicKey }) as AttestationCredential);
 
-    return publicKeyCredentialToJSON(credential);
+    return credentialToJSON(credential);
 }
