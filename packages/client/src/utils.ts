@@ -4,7 +4,6 @@ import { Unibabel } from 'unibabel';
  * Values returned from navigator.credentials.create()
  */
 export interface AttestationCredential extends PublicKeyCredential {
-    rawId: ArrayBuffer;
     response: AuthenticatorAttestationResponse;
 }
 
@@ -24,7 +23,6 @@ export interface AttestationCredentialJSON extends Omit<AttestationCredential, '
  * Values returned from navigator.credentials.get()
  */
 export interface AssertionCredential extends PublicKeyCredential {
-    rawId: ArrayBuffer;
     response: AuthenticatorAssertionResponse;
 }
 
@@ -42,9 +40,6 @@ export interface AssertionCredentialJSON extends Omit<AssertionCredential, 'rawI
     }
 }
 
-type WebauthnCredential = AttestationCredential | AssertionCredential;
-type WebauthnCredentialJSON = AttestationCredentialJSON | AssertionCredentialJSON;
-
 /**
  * Convenience method for converting an ArrayBuffer to a base64-encoded string
  */
@@ -59,7 +54,7 @@ export function stringToBuffer(input: string): ArrayBuffer {
     return Unibabel.base64ToBuffer(input);
 }
 
-export function publicKeyCredentialToJSON (credential: WebauthnCredential): WebauthnCredentialJSON {
+export function credentialToJSON (credential: AttestationCredential | AssertionCredential) {
     if ('attestationObject' in credential.response) {
         return {
             ...credential,
