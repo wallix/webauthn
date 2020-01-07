@@ -1,27 +1,40 @@
-import { publicKeyCredentialToJSON } from './utils';
+import { publicKeyCredentialToJSON, AttestationCredential, stringToBuffer } from './utils';
 
-const registrationChallengeToPublicKey = credentialsChallengeRequest => {
-    const { Unibabel } = require('unibabel');
+/**
+ * JSON-ified options to be passed into navigator.credentials.create(). These values are requested
+ * from the Relying Party (see `server > generateRegistrationChallenge()`), which responds with JSON
+ * containing ArrayBuffers converted to base64-encoded strings.
+ */
+interface RegistrationChallengeJSON extends Omit<PublicKeyCredentialCreationOptions, 'challenge' | 'user'> {
+    challenge: string; // A base64-encoded Buffer
+    user: {
+        id: string; // A base64-encoded Buffer
+        displayName: string;
+        name: string;
+    },
+}
 
+/**
+ * Convert JSON-ified credential options into values for use in navigator.credentials.create()
+ */
+function registrationChallengeToPublicKey (challenge: RegistrationChallengeJSON): PublicKeyCredentialCreationOptions {
     return {
-        ...credentialsChallengeRequest,
-        challenge: Unibabel.base64ToBuffer(
-            credentialsChallengeRequest.challenge
-        ),
+        ...challenge,
+        challenge: stringToBuffer(challenge.challenge),
         user: {
-            ...credentialsChallengeRequest.user,
-            id: Unibabel.base64ToBuffer(credentialsChallengeRequest.user.id),
+            ...challenge.user,
+            id: stringToBuffer(challenge.user.id),
         },
     };
-};
+}
 
-export const solveRegistrationChallenge = async credentialsChallengeRequest => {
-    const publicKey = registrationChallengeToPublicKey(
-        credentialsChallengeRequest
-    );
-    const credentials = await navigator.credentials.create({
-        publicKey,
-    });
+/**
+ * Initiate the Webauthn Attestation process, then convert the results to JSON to POST back to the
+ * Relying Party (see `server > parseRegisterRequest()`)
+ */
+export async function solveRegistrationChallenge (challenge: RegistrationChallengeJSON) {
+    const publicKey = registrationChallengeToPublicKey(challenge);
+    const credential = (await navigator.credentials.create({ publicKey }) as AttestationCredential);
 
-    return publicKeyCredentialToJSON(credentials);
-};
+    return publicKeyCredentialToJSON(credential);
+}
