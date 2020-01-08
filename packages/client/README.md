@@ -22,7 +22,7 @@ import {
 - `solveRegistrationChallenge`: convert the challenge returned by the server on the register route into the response to be returned
 - `solveLoginChallenge`: convert the challenge returned by the server on the login route into the response to be returned
 
-See an example in [example/front](../example/).
+See an example in [example/front](../..example/front).
 
 ## TypeScript support
 
