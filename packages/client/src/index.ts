@@ -1,2 +1,8 @@
-export { solveRegistrationChallenge } from './solveRegistrationChallenge';
-export { solveLoginChallenge } from './solveLoginChallenge';
+export {
+    solveRegistrationChallenge,
+    RegistrationChallengeJSON,
+} from './solveRegistrationChallenge';
+export {
+    solveLoginChallenge,
+    LoginChallengeJSON,
+} from './solveLoginChallenge';
