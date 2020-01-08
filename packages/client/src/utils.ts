@@ -11,7 +11,9 @@ export interface AttestationCredential extends PublicKeyCredential {
  * AttestationCredentials with ArrayBuffers converted to base64-encoded strings for JSON
  * compatibility
  */
-export interface AttestationCredentialJSON extends Omit<AttestationCredential, 'rawId' | 'response'> {
+export interface AttestationCredentialJSON extends Omit<
+    AttestationCredential, 'rawId' | 'response' | 'getClientExtensionResults'
+> {
     rawId: string;
     response: {
         attestationObject: string;
@@ -30,7 +32,9 @@ export interface AssertionCredential extends PublicKeyCredential {
  * AssertionCredentials with ArrayBuffers converted to base64-encoded strings for JSON
  * compatibility
  */
-export interface AssertionCredentialJSON extends Omit<AssertionCredential, 'rawId' | 'response'> {
+export interface AssertionCredentialJSON extends Omit<
+    AssertionCredential, 'rawId' | 'response' | 'getClientExtensionResults'
+> {
     rawId: string;
     response: {
         authenticatorData: string;
@@ -59,7 +63,8 @@ export function stringToBuffer(input: string): ArrayBuffer {
  */
 export function attestationToJSON(credential: AttestationCredential): AttestationCredentialJSON {
     return {
-        ...credential,
+        id: credential.id,
+        type: credential.type,
         rawId: bufferToString(credential.rawId),
         response: {
             attestationObject: bufferToString(credential.response.attestationObject),
@@ -82,7 +87,8 @@ export function assertionToJSON(credential: AssertionCredential): AssertionCrede
     }
 
     return {
-        ...credential,
+        id: credential.id,
+        type: credential.type,
         rawId: bufferToString(credential.rawId),
         response: {
             authenticatorData: bufferToString(credential.response.authenticatorData),
