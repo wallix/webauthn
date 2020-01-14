@@ -68,7 +68,7 @@ exports.convertASN1toPEM = pkBuffer => {
  * @return {Buffer}               - RAW PKCS encoded public key
  */
 exports.convertCOSEPublicKeyToRawPKCSECDHAKey = cosePublicKey => {
-    /* 
+    /*
     +------+-------+-------+---------+----------------------------------+
     | name | key   | label | type    | description                      |
     |      | type  |       |         |                                  |
@@ -116,4 +116,19 @@ exports.randomBase64Buffer = (len = 32) => {
 exports.parseBrowserBufferString = (key_id) => {
     const buffer = Buffer.from(key_id, 'base64');
     return buffer.toString('base64');
+};
+
+/**
+ * Convert raw base64-encoded string to multiline PEM.
+ */
+exports.base64ToPem = (str, type = 'CERTIFICATE') => {
+    const split = str.match(/.{1,65}/g).join('\n'); // split into 65-character lines
+    return `-----BEGIN ${type}-----\n${split}\n-----END ${type}-----\n`;
+};
+
+/**
+ * Convert multiline PEM to raw base64-encoded string.
+ */
+exports.pemToBase64 = (pem) => {
+    return pem.replace(/-----(BEGIN|END) [A-Z ]+-----/g, '').replace(/\n/g, '');
 };

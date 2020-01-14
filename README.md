@@ -47,7 +47,7 @@ import {
 } from '@webauthn/server';
 ```
 
-- `parseRegisterRequest`:
+- `parseRegisterRequest` (async):
     Extract challenge and key from the register request body. The challenge allow to retrieve the user, and the key must be stored server side linked to the user.
 - `generateRegistrationChallenge`:
     Generate a challenge from a relying party and a user `{ relyingParty, user }` to be sent back to the client, in order to register
@@ -63,10 +63,9 @@ See an example in example/server
 
 ## Roadmap
 
-For now only fido-u2f and packed format are implemented
+For now only android-safetynet, fido-u2f, and packed formats are implemented
 
 - Implement android-key format
-- Implement android-safetynet format
 - Implement tpm format
 
 

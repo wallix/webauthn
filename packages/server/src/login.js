@@ -1,5 +1,6 @@
 const { randomBase64Buffer, parseBrowserBufferString } = require('./utils');
 const { getChallengeFromClientData } = require('./getChallengeFromClientData');
+const { validateAndroidSafetyNetKey } = require('./authenticatorKey/parseAndroidSafetyNetKey');
 const { validateFidoPackedKey } = require('./authenticatorKey/parseFidoPackedKey');
 const { validateFidoU2FKey } = require('./authenticatorKey/parseFidoU2FKey');
 const { validateLoginCredentials } = require('./validation');
@@ -36,6 +37,15 @@ exports.verifyAuthenticatorAssertion = (data, key) => {
         data.response.authenticatorData,
         'base64'
     );
+
+    if (key.fmt === 'android-safetynet') {
+        return validateAndroidSafetyNetKey(
+            authenticatorDataBuffer,
+            key,
+            data.response.clientDataJSON,
+            data.response.signature
+        );
+    }
 
     if (key.fmt === 'fido-u2f') {
         return validateFidoU2FKey(
