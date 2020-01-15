@@ -35,22 +35,18 @@ app.post('/request-register', (req, res) => {
     res.send(challengeResponse);
 });
 
-app.post('/register', async (req, res) => {
-    try {
-        const { key, challenge } = await parseRegisterRequest(req.body);
+app.post('/register', (req, res) => {
+    const { key, challenge } = parseRegisterRequest(req.body);
 
-        const user = userRepository.findByChallenge(challenge);
+    const user = userRepository.findByChallenge(challenge);
 
-        if (!user) {
-            return res.sendStatus(400);
-        }
-
-        userRepository.addKeyToUser(user, key);
-
-        return res.send({ loggedIn: true });
-    } catch (err) {
-        next(err);
+    if (!user) {
+        return res.sendStatus(400);
     }
+
+    userRepository.addKeyToUser(user, key);
+
+    return res.send({ loggedIn: true });
 });
 
 app.post('/login', (req, res) => {

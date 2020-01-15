@@ -4,10 +4,66 @@ const {
     convertASN1toPEM,
     convertCOSEPublicKeyToRawPKCSECDHAKey
 } = require('../utils');
+const { createVerify } = require('crypto');
+const jsrsasign = require('jsrsasign');
 const { decode, verify } = require('jws');
-const pem = require('pem');
 
-exports.parseAndroidSafetyNetKey = async (authenticatorKey, clientDataJSON) => {
+const gsr2 = 'MIIDujCCAqKgAwIBAgILBAAAAAABD4Ym5g0wDQYJKoZIhvcNAQEFBQAwTDEgMB4GA1UECxMXR2xvYmFsU2lnbiBSb290IENBIC0gUjIxEzARBgNVBAoTCkdsb2JhbFNpZ24xEzARBgNVBAMTCkdsb2JhbFNpZ24wHhcNMDYxMjE1MDgwMDAwWhcNMjExMjE1MDgwMDAwWjBMMSAwHgYDVQQLExdHbG9iYWxTaWduIFJvb3QgQ0EgLSBSMjETMBEGA1UEChMKR2xvYmFsU2lnbjETMBEGA1UEAxMKR2xvYmFsU2lnbjCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBAKbPJA6+Lm8omUVCxKs+IVSbC9N/hHD6ErPLv4dfxn+G07IwXNb9rfF73OX4YJYJkhD10FPe+3t+c4isUoh7SqbKSaZeqKeMWhG8eoLrvozps6yWJQeXSpkqBy+0Hne/ig+1AnwblrjFuTosvNYSuetZfeLQBoZfXklqtTleiDTsvHgMCJiEbKjNS7SgfQx5TfC4LcshytVsW33hoCmEofnTlEnLJGKRILzdC9XZzPnqJworc5HGnRusyMvo4KD0L5CLTfuwNhv2GXqF4G3yYROIXJ/gkwpRl4pazq+r1feqCapgvdzZX99yqWATXgAByUr6P6TqBwMhAo6CygPCm48CAwEAAaOBnDCBmTAOBgNVHQ8BAf8EBAMCAQYwDwYDVR0TAQH/BAUwAwEB/zAdBgNVHQ4EFgQUm+IHV2ccHsBqBt5ZtJot39wZhi4wNgYDVR0fBC8wLTAroCmgJ4YlaHR0cDovL2NybC5nbG9iYWxzaWduLm5ldC9yb290LXIyLmNybDAfBgNVHSMEGDAWgBSb4gdXZxwewGoG3lm0mi3f3BmGLjANBgkqhkiG9w0BAQUFAAOCAQEAmYFThxxol4aR7OBKuEQLq4GsJ0/WwbgcQ3izDJr86iw8bmEbTUsp9Z8FHSbBuOmDAGJFtqkIk7mpM0sYmsL4h4hO291xNBrBVNpGP+DTKqttVCL1OmLNIG+6KYnX3ZHu01yiPqFbQfXf5WRDLenVOavSot+3i9DAgBkcRcAtjOj4LaR0VknFBbVPFd5uRHg5h6h+u/N5GJG79G+dwfCMNYxdAfvDbbnvRG15RjF+Cv6pgsH/76tuIMRQyV+dTZsXjAzlAcmgQWpzU/qlULRuJQ/7TBj0/VLZjmmx6BEP3ojY+x1J96relc8geMJgEtslQIxq/H5COEBkEveegeGTLg==';
+
+
+const getCertificateSubject = (certificate) => {
+    const subjectCert = new jsrsasign.X509();
+    subjectCert.readCertPEM(certificate);
+
+    const subjectString = subjectCert.getSubjectString();
+    const subjectFields = subjectString.slice(1).split('/');
+
+    let fields = {};
+    for (let field of subjectFields) {
+        const [ key, val ] = field.split('=');
+        fields[key] = val;
+    }
+
+    return fields;
+}
+
+const verifySigningChain = (certificates) => {
+    if ((new Set(certificates)).size !== certificates.length) {
+        throw new Error('Failed to validate certificates path! Duplicate certificates detected!');
+    }
+
+    certificates.forEach((subjectPem, i) => {
+        const subjectCert = new jsrsasign.X509();
+        subjectCert.readCertPEM(subjectPem);
+
+        let issuerPem = '';
+        if (i + 1 >= certificates.length)
+            issuerPem = subjectPem;
+        else
+            issuerPem = certificates[i + 1];
+
+        const issuerCert = new jsrsasign.X509();
+        issuerCert.readCertPEM(issuerPem);
+
+        if (subjectCert.getIssuerString() !== issuerCert.getSubjectString()) {
+            throw new Error(`Failed to validate certificate path! Issuers don't match!`);
+        }
+
+        const subjectCertStruct = jsrsasign.ASN1HEX.getTLVbyList(subjectCert.hex, 0, [0]);
+        const algorithm         = subjectCert.getSignatureAlgorithmField();
+        const signatureHex      = subjectCert.getSignatureValueHex();
+
+        const signature = new jsrsasign.crypto.Signature({ alg: algorithm });
+        signature.init(issuerPem);
+        signature.updateHex(subjectCertStruct);
+
+        if (!signature.verify(signatureHex)) {
+            throw new Error('Failed to validate certificate path! Signature is not valid!');
+        }
+    })
+}
+
+exports.parseAndroidSafetyNetKey = (authenticatorKey, clientDataJSON) => {
     const encodedJws = authenticatorKey.attStmt.response.toString();
     const jws = decode(authenticatorKey.attStmt.response);
     const payload = JSON.parse(jws.payload);
@@ -29,30 +85,24 @@ exports.parseAndroidSafetyNetKey = async (authenticatorKey, clientDataJSON) => {
     }
 
     // Verify that the SafetyNet response actually came from the SafetyNet service.
-    const formattedCerts = jws.header.x5c.map(cert => base64ToPem(cert, 'CERTIFICATE'));
-    const certChain = formattedCerts.slice(0).reverse()
+    const formattedCerts = jws.header.x5c.concat([gsr2]).map(cert => base64ToPem(cert, 'CERTIFICATE'));
     const leafCert = formattedCerts[0];
+    const subject = getCertificateSubject(leafCert);
+    if (subject.CN !== 'attest.android.com') {
+        return undefined;
+    }
     try {
-        const leafCertInfo = await pem.promisified.readCertificateInfo(leafCert)
-        if (leafCertInfo.commonName !== 'attest.android.com') {
-            throw new Error('Certificate was not issued to attest.android.com');
-        }
-        const verified = await pem.promisified.verifySigningChain(certChain)
-        if (!verified) {
-            throw new Error('Could not verifiy certificate signing chain')
-        }
+        verifySigningChain(formattedCerts);
     } catch (err) {
         return undefined;
     }
 
     // Verify the signature of the JWS message.
-    try {
-        const leafKeyInfo = await pem.promisified.getPublicKey(leafCert)
-        const publicKey = leafKeyInfo.publicKey
-        if (!verify(encodedJws, jws.header.alg, publicKey)) {
-          throw new Error('Could not verify JWS signature')
-        }
-    } catch (err) {
+    const leafCertX509 = new jsrsasign.X509();
+    leafCertX509.readCertPEM(leafCert);
+    const leafPublicKey = Buffer.from(leafCertX509.getPublicKeyHex(), 'hex').toString('base64');
+    const leafPublicKeyPem = base64ToPem(leafPublicKey, 'PUBLIC KEY');
+    if (!verify(encodedJws, jws.header.alg, leafPublicKeyPem)) {
         return undefined;
     }
 

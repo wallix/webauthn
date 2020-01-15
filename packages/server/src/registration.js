@@ -38,12 +38,12 @@ const parseAuthenticatorKey = (webAuthnResponse) => {
     return undefined;
 };
 
-exports.parseRegisterRequest = async (body) => {
+exports.parseRegisterRequest = (body) => {
     if (!validateRegistrationCredentials(body)) {
         return {};
     }
     const challenge = getChallengeFromClientData(body.response.clientDataJSON);
-    const key = await parseAuthenticatorKey(body.response);
+    const key = parseAuthenticatorKey(body.response);
 
     return {
         challenge,
