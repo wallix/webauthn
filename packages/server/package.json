@@ -13,7 +13,6 @@
   },
   "dependencies": {
     "cbor": "^5.0.1",
-    "jsrsasign": "^8.0.12",
-    "jws": "^3.2.2"
+    "jsrsasign": "^8.0.12"
   }
 }

@@ -6,7 +6,6 @@ const {
 } = require('../utils');
 const { createVerify } = require('crypto');
 const jsrsasign = require('jsrsasign');
-const { decode, verify } = require('jws');
 
 const gsr2 = 'MIIDujCCAqKgAwIBAgILBAAAAAABD4Ym5g0wDQYJKoZIhvcNAQEFBQAwTDEgMB4GA1UECxMXR2xvYmFsU2lnbiBSb290IENBIC0gUjIxEzARBgNVBAoTCkdsb2JhbFNpZ24xEzARBgNVBAMTCkdsb2JhbFNpZ24wHhcNMDYxMjE1MDgwMDAwWhcNMjExMjE1MDgwMDAwWjBMMSAwHgYDVQQLExdHbG9iYWxTaWduIFJvb3QgQ0EgLSBSMjETMBEGA1UEChMKR2xvYmFsU2lnbjETMBEGA1UEAxMKR2xvYmFsU2lnbjCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBAKbPJA6+Lm8omUVCxKs+IVSbC9N/hHD6ErPLv4dfxn+G07IwXNb9rfF73OX4YJYJkhD10FPe+3t+c4isUoh7SqbKSaZeqKeMWhG8eoLrvozps6yWJQeXSpkqBy+0Hne/ig+1AnwblrjFuTosvNYSuetZfeLQBoZfXklqtTleiDTsvHgMCJiEbKjNS7SgfQx5TfC4LcshytVsW33hoCmEofnTlEnLJGKRILzdC9XZzPnqJworc5HGnRusyMvo4KD0L5CLTfuwNhv2GXqF4G3yYROIXJ/gkwpRl4pazq+r1feqCapgvdzZX99yqWATXgAByUr6P6TqBwMhAo6CygPCm48CAwEAAaOBnDCBmTAOBgNVHQ8BAf8EBAMCAQYwDwYDVR0TAQH/BAUwAwEB/zAdBgNVHQ4EFgQUm+IHV2ccHsBqBt5ZtJot39wZhi4wNgYDVR0fBC8wLTAroCmgJ4YlaHR0cDovL2NybC5nbG9iYWxzaWduLm5ldC9yb290LXIyLmNybDAfBgNVHSMEGDAWgBSb4gdXZxwewGoG3lm0mi3f3BmGLjANBgkqhkiG9w0BAQUFAAOCAQEAmYFThxxol4aR7OBKuEQLq4GsJ0/WwbgcQ3izDJr86iw8bmEbTUsp9Z8FHSbBuOmDAGJFtqkIk7mpM0sYmsL4h4hO291xNBrBVNpGP+DTKqttVCL1OmLNIG+6KYnX3ZHu01yiPqFbQfXf5WRDLenVOavSot+3i9DAgBkcRcAtjOj4LaR0VknFBbVPFd5uRHg5h6h+u/N5GJG79G+dwfCMNYxdAfvDbbnvRG15RjF+Cv6pgsH/76tuIMRQyV+dTZsXjAzlAcmgQWpzU/qlULRuJQ/7TBj0/VLZjmmx6BEP3ojY+x1J96relc8geMJgEtslQIxq/H5COEBkEveegeGTLg==';
 
@@ -65,11 +64,14 @@ const verifySigningChain = (certificates) => {
 
 exports.parseAndroidSafetyNetKey = (authenticatorKey, clientDataJSON) => {
     const encodedJws = authenticatorKey.attStmt.response.toString();
-    const jws = decode(authenticatorKey.attStmt.response);
-    const payload = JSON.parse(jws.payload);
+    const jwsParts = encodedJws.split('.');
+    const jws = {
+        header: JSON.parse(Buffer.from(jwsParts[0], 'base64').toString()),
+        payload: JSON.parse(Buffer.from(jwsParts[1], 'base64').toString())
+    }
 
     // Check device integrity.
-    if (!payload.ctsProfileMatch && !payload.basicIntegrity) {
+    if (!jws.payload.ctsProfileMatch && !jws.payload.basicIntegrity) {
         return undefined;
     }
 
@@ -80,7 +82,7 @@ exports.parseAndroidSafetyNetKey = (authenticatorKey, clientDataJSON) => {
     );
     const authAndClientData = Buffer.concat([authenticatorKey.authData, clientDataHash]);
     const expectedNonce = hash('SHA256', authAndClientData).toString('base64');
-    if (expectedNonce !== payload.nonce) {
+    if (expectedNonce !== jws.payload.nonce) {
         return undefined;
     }
 
@@ -102,7 +104,7 @@ exports.parseAndroidSafetyNetKey = (authenticatorKey, clientDataJSON) => {
     leafCertX509.readCertPEM(leafCert);
     const leafPublicKey = Buffer.from(leafCertX509.getPublicKeyHex(), 'hex').toString('base64');
     const leafPublicKeyPem = base64ToPem(leafPublicKey, 'PUBLIC KEY');
-    if (!verify(encodedJws, jws.header.alg, leafPublicKeyPem)) {
+    if (!jsrsasign.jws.JWS.verify(encodedJws, leafPublicKeyPem)) {
         return undefined;
     }
 
