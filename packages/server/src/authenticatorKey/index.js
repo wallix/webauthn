@@ -1,4 +1,5 @@
 const { decodeAllSync } = require('cbor');
+const { parseAndroidSafetyNetKey } = require('./parseAndroidSafetyNetKey');
 const { parseFidoU2FKey } = require('./parseFidoU2FKey');
 const { parseFidoPackedKey } = require('./parseFidoPackedKey');
 
@@ -11,6 +12,10 @@ exports.parseAuthenticatorKey = credentials => {
     const authenticatorKeyBuffer = Buffer.from(credentials.attestationObject, 'base64');
 
     const authenticatorKey = decodeAllSync(authenticatorKeyBuffer)[0];
+
+    if (authenticatorKey.fmt === 'android-safetynet') {
+        return parseAndroidSafetyNetKey(authenticatorKey, credentials.clientDataJSON);
+    }
 
     if (authenticatorKey.fmt === 'fido-u2f') {
         return parseFidoU2FKey(authenticatorKey, credentials.clientDataJSON);

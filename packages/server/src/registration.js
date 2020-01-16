@@ -2,6 +2,7 @@ const { decodeAllSync } = require('cbor');
 
 const { randomBase64Buffer } = require('./utils');
 const { getChallengeFromClientData } = require('./getChallengeFromClientData');
+const { parseAndroidSafetyNetKey } = require('./authenticatorKey/parseAndroidSafetyNetKey');
 const { parseFidoU2FKey } = require('./authenticatorKey/parseFidoU2FKey');
 const { parseFidoPackedKey } = require('./authenticatorKey/parseFidoPackedKey');
 const { validateRegistrationCredentials } = require('./validation');
@@ -12,6 +13,13 @@ const parseAuthenticatorKey = (webAuthnResponse) => {
         'base64'
     );
     const authenticatorKey = decodeAllSync(authenticatorKeyBuffer)[0];
+
+    if (authenticatorKey.fmt === 'android-safetynet') {
+        return parseAndroidSafetyNetKey(
+            authenticatorKey,
+            webAuthnResponse.clientDataJSON
+        );
+    }
 
     if (authenticatorKey.fmt === 'fido-u2f') {
         return parseFidoU2FKey(

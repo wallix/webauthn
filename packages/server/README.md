@@ -63,10 +63,9 @@ See an example in example/server
 
 ## Roadmap
 
-For now only fido-u2f and packed format are implemented
+For now only android-safetynet, fido-u2f, and packed formats are implemented
 
 - Implement android-key format
-- Implement android-safetynet format
 - Implement tpm format
 
 
