@@ -2,7 +2,7 @@
 
 This library contains convenience methods intended to simplify interactions with a browser's Webauthn API.
 
-This front end library compliments this repo's [@webauthn/server](../server/) NodeJS library.
+This front end library complements this repo's [@webauthn/server](../server/) NodeJS library.
 
 ## Installation
 
