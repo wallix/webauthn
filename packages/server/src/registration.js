@@ -43,7 +43,7 @@ exports.parseRegisterRequest = (body) => {
     };
 };
 
-exports.generateRegistrationChallenge = ({ relyingParty, user, authenticator = 'cross-platform', attestation = 'direct' } = {}) => {
+exports.generateRegistrationChallenge = ({ relyingParty, user, authenticator = 'cross-platform', attestation = 'direct', excludeCredentials = [] } = {}) => {
     if (!relyingParty || !relyingParty.name || typeof relyingParty.name !== 'string') {
         throw new Error('The typeof relyingParty.name should be a string');
     }
@@ -80,6 +80,7 @@ exports.generateRegistrationChallenge = ({ relyingParty, user, authenticator = '
         ],
         authenticatorSelection: {
             authenticatorAttachment: authenticator
-        }
+        },
+        excludeCredentials
     };
 };
