@@ -14,7 +14,7 @@ exports.parseFidoU2FKey = (authenticatorKey, clientDataJSON) => {
     }
 
     const clientDataHash = hash(
-        'SHA256',
+        'sha256',
         Buffer.from(clientDataJSON, 'base64')
     );
     const reservedByte = Buffer.from([0x00]);
@@ -59,7 +59,7 @@ exports.validateFidoU2FKey = (
     }
 
     const clientDataHash = hash(
-        'SHA256',
+        'sha256',
         Buffer.from(clientDataJSON, 'base64')
     );
     const signatureBase = Buffer.concat([
