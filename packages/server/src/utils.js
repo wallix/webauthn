@@ -101,7 +101,7 @@ exports.verifySignature = (
     data,
     publicKey
 ) => {
-    return createVerify('SHA256')
+    return createVerify('sha256')
         .update(data)
         .verify(publicKey, signature);
 };
