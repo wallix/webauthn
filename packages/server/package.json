@@ -9,7 +9,7 @@
     "directory": "packages/server"
   },
   "engines": {
-    "node": ">=10 <11"
+    "node": ">=10"
   },
   "dependencies": {
     "cbor": "^5.0.1",
