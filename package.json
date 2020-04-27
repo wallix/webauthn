@@ -14,6 +14,7 @@
         "lerna": "^3.14.1"
     },
     "resolutions": {
-        "https-proxy-agent": "^2.2.3"
+        "https-proxy-agent": "^2.2.3",
+        "minimist": "^1.2.5"
     }
 }

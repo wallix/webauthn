@@ -10,7 +10,8 @@
   },
   "scripts": {
     "build": "webpack --mode=production",
-    "prepublish": "webpack --mode=production"
+    "prepublish": "webpack --mode=production",
+    "preinstall": "npx npm-force-resolutions"
   },
   "license": "Apache-2.0",
   "dependencies": {
@@ -24,5 +25,8 @@
     "@babel/preset-env": "^7.5.5",
     "babel-loader": "^8.0.6",
     "webpack-cli": "^3.3.1"
+  },
+  "resolutions": {
+    "minimist": "^1.2.5"
   }
 }

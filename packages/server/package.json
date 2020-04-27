@@ -8,11 +8,17 @@
     "url": "https://github.com:wallix/webauthn.git",
     "directory": "packages/server"
   },
+  "scripts": {
+    "preinstall": "npx npm-force-resolutions"
+  },
   "engines": {
     "node": ">=10 <11"
   },
   "dependencies": {
     "cbor": "^5.0.1",
     "jsrsasign": "^8.0.12"
+  },
+  "resolutions": {
+    "minimist": "^1.2.5"
   }
 }

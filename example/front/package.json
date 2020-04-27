@@ -4,7 +4,7 @@
     "private": true,
     "license": "Apache",
     "resolutions": {
-        "minimist": "^1.2.3"
+        "minimist": "^1.2.5"
     },
     "dependencies": {
         "@webauthn/client": "^0.1.3",
@@ -15,6 +15,7 @@
     "scripts": {
         "build-dev": "webpack --mode=development --watch",
         "prestart": "webpack --mode=development",
-        "start": "http-server ./dist"
+        "start": "http-server ./dist",
+        "preinstall": "npx npm-force-resolutions"
     }
 }
