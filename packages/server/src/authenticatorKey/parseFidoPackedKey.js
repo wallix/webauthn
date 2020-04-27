@@ -129,7 +129,7 @@ exports.validateFidoPackedKey = (
     }
 
     const clientDataHash = hash(
-        'SHA256',
+        'sha256',
         Buffer.from(clientDataJSON, 'base64')
     );
     const signatureBaseBuffer = Buffer.concat([
