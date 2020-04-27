@@ -15,6 +15,7 @@
     },
     "resolutions": {
         "https-proxy-agent": "^2.2.3",
-        "minimist": "^1.2.5"
+        "minimist": "^1.2.5",
+        "ecstatic": "^4.1.4"
     }
 }

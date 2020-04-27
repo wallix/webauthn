@@ -4,7 +4,8 @@
     "private": true,
     "license": "Apache",
     "resolutions": {
-        "minimist": "^1.2.5"
+        "minimist": "^1.2.5",
+        "ecstatic": "^4.1.4"
     },
     "dependencies": {
         "@webauthn/client": "^0.1.3",
