@@ -58,7 +58,7 @@ import {
 - `verifyAuthenticatorAssertion`:
     Take the loginChallenge request body and the key stored with the user, and return true if it passes the authenticator assertion
 
-See an example in example/server
+See an example in example/api
 
 
 ## Roadmap
