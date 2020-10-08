@@ -56,7 +56,7 @@ exports.generateRegistrationChallenge = ({ relyingParty, user, authenticator = '
         authenticator = 'cross-platform';
     }
 
-    if (!(['none', 'direct', 'indirect'].includes(attestation))) {
+    if (!(['none', 'direct', 'indirect', 'enterprise'].includes(attestation))) {
         attestation = 'direct';
     }
 
